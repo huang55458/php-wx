@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="bfefb3db-7229-4f76-9f91-6bc541eeaf84" name="变更" comment="">
+      <change beforePath="$PROJECT_DIR$/.example.env" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.travis.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/LICENSE.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/.htaccess" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/AppService.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/BaseController.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/ExceptionHandle.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Request.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/cnsts/WeChat.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/common.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/controller/Index.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/controller/WeChat.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/event.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/event/Test.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/listener/Test.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/middleware.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/middleware/Test.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/model/User.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/provider.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/service.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/service/Test.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/app.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/cache.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/console.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/cookie.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/database.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/filesystem.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/lang.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/log.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/middleware.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/route.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/session.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/trace.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/view.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/extend/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/.htaccess" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/favicon.ico" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/index.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/robots.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/router.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/static/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/route/app.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/runtime/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/think" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/view/README.md" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ComposerSettings" doNotAsk="true" synchronizationState="SYNCHRONIZE">
+    <pharConfigPath>E:\app\tp6\tp\composer.json</pharConfigPath>
+    <execution>
+      <executable path="E:\app\composer.bat" />
+    </execution>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="PhpWorkspaceProjectConfiguration" interpreter_name="PHP">
+    <include_path>
+      <path value="$PROJECT_DIR$/vendor/psr/container" />
+      <path value="$PROJECT_DIR$/vendor/psr/http-message" />
+      <path value="$PROJECT_DIR$/vendor/psr/log" />
+      <path value="$PROJECT_DIR$/vendor/psr/simple-cache" />
+      <path value="$PROJECT_DIR$/vendor/topthink/think-filesystem" />
+      <path value="$PROJECT_DIR$/vendor/symfony/deprecation-contracts" />
+      <path value="$PROJECT_DIR$/vendor/topthink/think-helper" />
+      <path value="$PROJECT_DIR$/vendor/league/flysystem" />
+      <path value="$PROJECT_DIR$/vendor/symfony/polyfill-mbstring" />
+      <path value="$PROJECT_DIR$/vendor/topthink/think-orm" />
+      <path value="$PROJECT_DIR$/vendor/league/mime-type-detection" />
+      <path value="$PROJECT_DIR$/vendor/symfony/var-dumper" />
+      <path value="$PROJECT_DIR$/vendor/topthink/think-trace" />
+      <path value="$PROJECT_DIR$/vendor/composer" />
+      <path value="$PROJECT_DIR$/vendor/topthink/framework" />
+      <path value="$PROJECT_DIR$/vendor/gaoming13/wechat-php-sdk" />
+    </include_path>
+  </component>
+  <component name="ProjectId" id="2XmZg3hdVIUXU60eiWXyfFgwyFl" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "E:/app/tp6",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "php.test.frameworks.configurable",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\app\tp6\tp" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="ComposerRunConfigurationType" factoryName="Composer Script">
+      <option name="pathToComposerJson" value="$PROJECT_DIR$/composer.json" />
+      <method v="2" />
+    </configuration>
+    <configuration name="start" type="PhpLocalRunConfigurationType" factoryName="PHP Console" path="$PROJECT_DIR$/think" scriptParameters="run -p 80">
+      <CommandLine>
+        <PhpTestInterpreterSettings>
+          <option name="interpreterName" value="PHP" />
+        </PhpTestInterpreterSettings>
+      </CommandLine>
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="应用程序级" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="默认任务">
+      <changelist id="bfefb3db-7229-4f76-9f91-6bc541eeaf84" name="变更" comment="" />
+      <created>1699236322343</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1699236322343</updated>
+      <workItem from="1699236323638" duration="1271000" />
+      <workItem from="1699237603100" duration="136000" />
+      <workItem from="1699237867511" duration="259000" />
+      <workItem from="1699238141711" duration="13462000" />
+      <workItem from="1699316863081" duration="7605000" />
+      <workItem from="1699403628661" duration="1659000" />
+      <workItem from="1699576360964" duration="599000" />
+      <workItem from="1699662716567" duration="5045000" />
+      <workItem from="1699835538219" duration="16613000" />
+      <workItem from="1699921939998" duration="6758000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+</project>
