@@ -4,6 +4,7 @@ declare (strict_types = 1);
 namespace app\controller;
 
 use app\BaseController;
+use app\service\WeChatService;
 use Gaoming13\WechatPhpSdk\Utils\FileCache;
 use Gaoming13\WechatPhpSdk\Wechat as WX;
 use app\cnsts\WeChat as WX_Cnsts;
@@ -19,10 +20,12 @@ class WeChat extends BaseController
     private array $msg;// 接收的信息
     private object $weChat;
     private object $api;
+    private object $cache;
 
     public function __construct(App $app,FileCache $cache)
     {
         parent::__construct($app);
+        $this->cache = $cache;
         $this->weChat = new WX([
             // 开发者中心-配置项-AppID(应用ID)
             'appId' => env('APP_ID'),
@@ -42,27 +45,49 @@ class WeChat extends BaseController
                 $cache->set('access_token', $token, 7000);
             },
         ]);
-        $this->msg = $this->weChat->serve();
-        Log::info("来自{$this->msg['FromUserName']}的消息：{$this->msg['Content']}");
     }
     /**
      * 显示资源列表
      *
      * @return Response
      */
-    public function index()
+    public function index(WeChatService $weChatService)
     {
+        $this->msg = $this->weChat->serve();
+        Log::info("来自{$this->msg['FromUserName']}的消息：{$this->msg['Content']}");
         // 用户关注微信号后 - 回复用户普通文本消息
         if ($this->msg['MsgType'] === WX_Cnsts::EVENT && $this->msg['Event'] === WX_Cnsts::SUBSCRIBE) {
             $this->message = $this->weChat->reply($this->default_msg);
             goto ret;
         }
 
-// 回复微信消息
-        if ($this->msg['MsgType'] === WX_Cnsts::TEXT && $this->msg['Content'] === '你好') {
-            $this->message = $this->weChat->reply("你也好！");
-        } else {
-            $this->message = $this->weChat->reply("听不懂！");
+        // 回复微信消息
+        if ($this->msg['MsgType'] === WX_Cnsts::TEXT) {
+            switch ($this->msg['Content']) {
+                case '你好':
+                    $this->message = $this->weChat->reply("你也好！");
+                    break;
+                case '授权测试'://个人账户无法认证
+                    $authorize_url = $this->api->get_authorize_url('snsapi_base', 'http://64.176.54.10/demo/WeChat/create');
+                    $this->api->send($this->msg['FromUserName'], $authorize_url);
+                    return json();
+                case '图片测试':
+                    $this->message = $this->weChat->reply([
+                        'type' => 'image',
+                        'media_id' => 'POt8OJd3wh-Y7zlHLAtrNmCL9zbFmkOCLyJIP4RCf361nMqlS18DKYUvf2Y5ZCQi'
+                    ]);
+                    break;
+                case '图片':
+                    $media_id = $weChatService->randomGenshinImage($this->api,$this->cache);
+                    $this->message = $this->weChat->reply([
+                        'type' => 'image',
+                        'media_id' => $media_id,
+                    ]);
+                    break;
+                default:
+                    $this->message = $this->weChat->reply("听不懂！");
+                    break;
+            }
         }
         ret:
         return xml($this->message);
@@ -75,62 +100,69 @@ class WeChat extends BaseController
      */
     public function create()
     {
-        return xml('<xml><Encrypt><![CDATA[vaPahzMkbTgPdJELTVq7eyNhOi8psdILpU08aQQzzFUqaHZPWzTLvLqbi56lbf9aLSxQiDDtiTa42NO8U1Fh6XTH+pKeJNyQDUOrrU4zD7iIPLdFnI5HdHkWCr9NP6LmqCinjPPYCKS1Xve5nRyfgL6Ryzd2DxV17u07ycBHF0hh8sLzIY9TEHhinMiteTybe2Ozf+dqyuxKDcrYLapHUKOUtZ5IbmrpQ0ZTcFo/e7WYT+HP/CZ9VNln1mecbfe8bKk8qEljGkBSN1pT+s0ZlIjJLYjmIR4UQhcnYheMGKOGy/cYx6CnX2a0LrX5/+a0P7oFTqTscWSKo9Q7Ie7uYe3kdIqs7DkVOKG2iiGjgIL/PWzwWKaL7iw9lLU11MOf]]></Encrypt><MsgSignature><![CDATA[9a6c77e768fc391f0afbe0f52b8f47b90af9b7f3]]></MsgSignature><TimeStamp>1699861262</TimeStamp><Nonce><![CDATA[2111573894]]></Nonce></xml>');
+        list($err, $user_info) = $this->api->get_userinfo_by_authorize('snsapi_base');
+        if ($user_info !== null) {
+            dump($user_info);
+        } else {
+            echo '授权失败！';
+        }
     }
 
     /**
-     * 保存新建的资源
+     * 上传图片
      *
-     * @param  \think\Request  $request
      * @return Response
      */
-    public function save(Request $request)
+    public function save()
     {
-        //
+        $path = 'C:\Users\Administrator\Pictures\1693032653507.png';
+        $arr = $this->api->add_material(WX_Cnsts::IMAGE,$path);
+        return json($arr);
     }
 
     /**
-     * 显示指定的资源
+     * 随机显示资源
      *
-     * @param  int  $id
      * @return Response
      */
-    public function read($id)
+    public function read()
     {
-        //
+        $arr = $this->api->get_materials(WX_Cnsts::IMAGE,0,20);
+        return json($arr);
     }
 
     /**
      * 显示编辑资源表单页.
      *
-     * @param  int  $id
+     * @param  string  $media_id
      * @return Response
      */
-    public function edit($id)
+    public function edit(string $media_id)
     {
-        //
+        $arr = $this->api->get_material($media_id);
+        Log::info(json_encode($arr,256));
     }
 
     /**
      * 保存更新的资源
      *
-     * @param  \think\Request  $request
-     * @param  int  $id
+     * @param string $key
      * @return Response
      */
-    public function update(Request $request, $id)
+    public function genMediaList(WeChatService $weChatService, string $key = WX_Cnsts::GENSHIN)
     {
-        //
+        return json($weChatService->genMediaList($this->api,$this->cache,$key));
     }
 
     /**
      * 删除指定资源
      *
-     * @param  int  $id
+     * @param string $media_id
      * @return Response
      */
-    public function delete($id)
+    public function delete(string $media_id)
     {
-        //
+        $arr = $this->api->del_material($media_id);
+        return json($arr);
     }
 }

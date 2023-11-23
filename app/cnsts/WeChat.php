@@ -19,4 +19,8 @@ class WeChat{
     public const LOCATION_ONLOAD = 'LOCATION';//上传地理位置
     public const CLICK = 'CLICK';//自定义菜单点击
     public const VIEW = 'VIEW';//
+
+
+    public const IMAGE_GENSHIN_LIST = 'image_genshin_list';//
+    public const GENSHIN = 'genshin';//
 }
