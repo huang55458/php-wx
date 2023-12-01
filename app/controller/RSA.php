@@ -6,6 +6,11 @@ namespace app\controller;
 use think\facade\Log;
 use think\Request;
 
+/**
+ * RSA加密对明文的长度有所限制，规定需加密的明文最大长度=密钥长度-11（单位是字节，即byte），所以在加密和解密的过程中需要分块进行。
+ * 而密钥默认是1024位，即1024位/8位-11=128-11=117字节。所以默认加密前的明文最大长度117字节，解密密文最大长度为128字。
+ * 那么为啥两者相差11字节呢？是因为RSA加密使用到了填充模式（padding），即内容不足117字节时会自动填满，用到填充模式自然会占用一定的字节，而且这部分字节也是参与加密的
+ */
 class RSA
 {
     private object $rsa;
@@ -72,6 +77,7 @@ class RSA
     }
 
     /**
+     * 基于pkcs1/8标准的加解密
      * 加密测试
      * 公钥加密、私钥解密、私钥签名、公钥验签
      * @return \think\Response
@@ -90,51 +96,54 @@ class RSA
         openssl_sign($encrypted, $sign, openssl_pkey_get_private($private_key, $this->rsa->getPassPhrase()));
         Log::info('用私钥签名：'.base64_encode($sign));
         $verify = openssl_verify($encrypted, $sign, $public_key);
+        Log::info('验签结果：'.$verify);//成功1，失败0
+    }
+
+    /**
+     * 基于pkcs12标准的加解密
+     * 加密测试
+     * 公钥加密、私钥解密、私钥签名、公钥验签
+     * @return \think\Response
+     */
+    public function test4()
+    {
+        $data = 'test';
+        $public_key = file_get_contents(runtime_path().'certs'.DIRECTORY_SEPARATOR.'_cert.cer');
+        $public_key = openssl_pkey_get_public($public_key);
+        $private_key = file_get_contents(runtime_path().'certs'.DIRECTORY_SEPARATOR.'_private.pfx');
+        $priKeys = [];
+        openssl_pkcs12_read($private_key, $priKeys, $this->rsa->getPassPhrase());
+        $priKey = openssl_pkey_get_private($priKeys['pkey']);
+        openssl_public_encrypt($data, $encrypted, $public_key);
+        Log::info('test 公钥加密后的数据(base64_encode)：'.base64_encode($encrypted));
+        openssl_private_decrypt($encrypted, $decrypted, $priKey);
+        Log::info('用私钥解密：'.$decrypted);
+        openssl_public_decrypt($encrypted, $decrypted2, $public_key);
+        Log::info('用公钥解密：'.$decrypted2);
+        openssl_sign($encrypted, $sign, $priKey);
+        Log::info('用私钥签名：'.base64_encode($sign));
+        $verify = openssl_verify($encrypted, $sign, $public_key);
         Log::info('验签结果：'.$verify);
     }
 
     /**
-     * 显示指定的资源
+     * aes加密测试
      *
-     * @param  int  $id
      * @return \think\Response
      */
-    public function read($id)
+    public function test5()
     {
-        //
-    }
+        $str = 'test';
+        $pass = '12345';
+        $iv = openssl_random_pseudo_bytes(16,$crypto_strong) ;
+        Log::info('$iv：'.$iv);
+        if ($iv === false || $crypto_strong === false) {
+            return ;
+        }
+        $encrypt = base64_encode(openssl_encrypt($str, 'AES-256-CBC', $pass,  OPENSSL_RAW_DATA, $iv));
+        Log::info('加密结果：'.$encrypt);
 
-    /**
-     * 显示编辑资源表单页.
-     *
-     * @param  int  $id
-     * @return \think\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * 保存更新的资源
-     *
-     * @param  \think\Request  $request
-     * @param  int  $id
-     * @return \think\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * 删除指定资源
-     *
-     * @param  int  $id
-     * @return \think\Response
-     */
-    public function delete($id)
-    {
-        //
+        $decrypt = openssl_decrypt(base64_decode($encrypt), 'AES-256-CBC', $pass,  OPENSSL_RAW_DATA, $iv);
+        Log::info('解密结果：'.$decrypt);
     }
 }
