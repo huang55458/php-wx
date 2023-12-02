@@ -3,7 +3,6 @@
 namespace app\controller;
 
 use app\BaseController;
-use think\Env;
 
 class Index extends BaseController
 {
@@ -16,5 +15,10 @@ class Index extends BaseController
     {
         event('Test');
         return 'hello,' . $name;
+    }
+
+    public function test()
+    {
+
     }
 }
