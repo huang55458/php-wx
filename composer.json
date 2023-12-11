@@ -26,9 +26,9 @@
         "topthink/think-filesystem": "^2.0",
         "topthink/think-helper": "^3.1",
         "gaoming13/wechat-php-sdk": "1.*",
-        "269995848/qqrobot": "dev-master",
         "topthink/think-migration": "^3.1",
-        "topthink/think-worker": "^4.0"
+        "topthink/think-worker": "^4.0",
+        "topthink/think-swoole": "^4.0"
     },
     "require-dev": {
         "symfony/var-dumper": ">=4.2",
