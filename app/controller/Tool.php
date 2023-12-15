@@ -76,4 +76,88 @@ class Tool extends BaseController
 
         return $tmp;
     }
+
+    public function test4() {
+        $file_handle = fopen(runtime_path().DIRECTORY_SEPARATOR.'tmp2.txt', 'rb');
+        function get_all_lines($file_handle): \Generator
+        {
+            while (!feof($file_handle)) {
+                yield fgets($file_handle);
+            }
+        }
+        $flag = true;
+        $data = array();
+        foreach (get_all_lines($file_handle) as $line) {
+            if ($flag) {
+                $flag = false;continue;
+            }
+            $data[] = $line;
+        }
+        echo array_sum($data);
+        fclose($file_handle);
+    }
+
+    public function test5() {
+        $this->file_path = runtime_path().DIRECTORY_SEPARATOR.'tmp.txt';
+//        ini_set('memory_limit','4000M');
+        $param['url'] = '';
+        $param['cookie'] = '';
+        $param['data'] = [
+            'req' => ''
+        ];
+        $data = test_curl('post', $param);
+
+        if (empty($data)) {
+            jdd('error');
+        }
+        foreach ($data['res']['data'] as $v) {
+            $m = (int)$v['finance_center_amount'];
+            if (!empty($m)) {
+                file_put_contents($this->file_path, $m . PHP_EOL, FILE_APPEND);
+            }
+        }
+    }
+
+
+    public function test6() {
+        $lines = file_get_contents('/mnt/c/Users/Administrator/Documents/1111.txt');
+        $lines = explode("\n", $lines);
+        $lines2 = file_get_contents(runtime_path().DIRECTORY_SEPARATOR.'tmp.txt');
+        $lines2 = explode("\n", $lines2);
+        $f = 0;
+        $count = count($lines);
+        for ($i = 0; $i < $count; $i++) {
+            $tmp = (int)$lines2[$i] - (int)$lines[$i];
+            echo $tmp;
+            $f += $tmp ;
+            if ($f > 1000 || $f < -1000) {
+                echo $i;break;
+            }
+        }
+    }
+
+    public function test7() {
+
+//        $data = $this->data();
+        $data = [
+            [1,'name','ffffff'],
+            [2,'name','ffffff'],
+            [3,'name','ffffff'],
+        ];
+        export_csv('test', ['id', 'name', 'create_time'], $data);
+        die();
+    }
+
+    function data(): \Generator
+    {
+        $id = 1;
+        do {
+            $data = Db::name('user')->where('id', '=', $id)->limit(1)->field('id,name,create_time')->select();
+            $id++;
+            if (isset($data[0])) {
+                yield $data[0];
+            }
+            if ($id > 10) {break;}
+        } while (!empty($data));
+    }
 }
