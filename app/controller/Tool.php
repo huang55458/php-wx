@@ -3,6 +3,7 @@
 namespace app\controller;
 
 use app\BaseController;
+use app\service\ToolService;
 use think\facade\Db;
 
 
@@ -97,25 +98,23 @@ class Tool extends BaseController
         fclose($file_handle);
     }
 
-    public function test5() {
+    public function test5(ToolService $toolService) {
         $this->file_path = runtime_path().DIRECTORY_SEPARATOR.'tmp.txt';
 //        ini_set('memory_limit','4000M');
-        $param['url'] = '';
-        $param['cookie'] = '';
-        $param['data'] = [
-            'req' => ''
-        ];
-        $data = test_curl('post', $param);
+        $url = '';
+        $cookie = '';
+        $req = '';
+        $key = '';
 
-        if (empty($data)) {
-            jdd('error');
-        }
-        foreach ($data['res']['data'] as $v) {
-            $m = (int)$v['finance_center_amount'];
-            if (!empty($m)) {
-                file_put_contents($this->file_path, $m . PHP_EOL, FILE_APPEND);
-            }
-        }
+        $param = [
+            'url' => $url,
+            'cookie' => $cookie,
+            'data' => [
+                'req' => $req,
+            ],
+        ];
+        $toolService->getSpecifyKeyData($param, $this->file_path, $key);
+        return 'success';
     }
 
 
@@ -159,5 +158,11 @@ class Tool extends BaseController
             }
             if ($id > 10) {break;}
         } while (!empty($data));
+    }
+
+    public function test8(){
+        $data = file_get_contents(runtime_path().DIRECTORY_SEPARATOR.'tmp.txt');
+        $data = array_filter(explode(',',$data));
+        jdd(count($data));
     }
 }
