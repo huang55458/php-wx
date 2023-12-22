@@ -1,6 +1,7 @@
 <?php
 namespace app\command;
 
+use app\utils\SendEmail;
 use think\console\Command;
 use think\console\Input;
 use think\console\input\Argument;
@@ -12,22 +13,20 @@ class Hello extends Command
     protected function configure()
     {
         $this->setName('hello')
-            ->addArgument('name', Argument::OPTIONAL, "your name")
-            ->addOption('city', null, Option::VALUE_REQUIRED, 'city name')
-            ->setDescription('Say Hello');
+//            ->addArgument('name', Argument::OPTIONAL, "test")
+            ->addOption('send-email', 'e', Option::VALUE_NONE, 'send email')
+            ->setDescription('utils fun');
     }
 
     protected function execute(Input $input, Output $output)
     {
-        $name = trim($input->getArgument('name'));
-        $name = $name ?: 'thinkphp';
+//        $name = trim($input->getArgument('name'));
 
-        if ($input->hasOption('city')) {
-            $city = PHP_EOL . 'From ' . $input->getOption('city');
-        } else {
-            $city = '';
+        if ($input->hasOption('send-email')) {
+//            $body = $input->getOption('send-email');
+            (new SendEmail()) -> run();
         }
 
-        $output->writeln("Hello," . $name . '!' . $city);
+        $output->writeln("success");
     }
 }
