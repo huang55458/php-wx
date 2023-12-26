@@ -3,6 +3,8 @@ declare (strict_types = 1);
 
 namespace app\service;
 
+use think\facade\Log;
+
 class ToolService extends \think\Service
 {
     /**
@@ -41,6 +43,7 @@ class ToolService extends \think\Service
                 $req['page_num']++;
                 $param['data']['req'] = json_encode($req,JSON_UNESCAPED_UNICODE);
                 $data = test_curl('post', $param);
+                Log::write('page_num :'.$req['page_num']);
                 file_put_contents($file_path, ','.implode(',', array_filter(array_column($data['res']['data'],$key))), FILE_APPEND);
             }
         }
