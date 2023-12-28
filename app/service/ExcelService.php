@@ -68,7 +68,11 @@ class ExcelService extends \think\Service
             ->setKeywords('office 2007 openxml php')
             ->setCategory('result file');
 
-        $this->setValue($spreadsheet,$header,$data);
+        if (!is_array($data)) {
+            $this->setValue($spreadsheet, $header, $data);
+        } else {
+            $this->setArrayValue($spreadsheet, $header, $data);
+        }
 
 
         // Rename worksheet
@@ -126,6 +130,28 @@ class ExcelService extends \think\Service
         $y = 2;
         while (!$data->isEmpty()) {
             $row = $data->shift();
+            foreach ($row as $k => $v) {
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue($map[$k] . $y, $v);
+            }
+            $y++;
+        }
+    }
+
+    public function setArrayValue($spreadsheet,array $header,array $data)
+    {
+        $map = [];
+        $i = 1;
+        while (!empty($header)) {
+            $tmp = array_shift($header);
+            $map[$tmp] = $this->column[$i];
+            $spreadsheet->getActiveSheet()->getColumnDimension($this->column[$i])->setAutoSize(true);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue($this->column[$i] . "1", $tmp);
+            $i++;
+        }
+
+        $y = 2;
+        while (!empty($data)) {
+            $row = array_shift($data);
             foreach ($row as $k => $v) {
                 $spreadsheet->setActiveSheetIndex(0)->setCellValue($map[$k] . $y, $v);
             }

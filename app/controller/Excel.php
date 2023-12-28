@@ -28,4 +28,20 @@ class Excel extends BaseController
         $res = $this->excelService->loadXlsx('/mnt/d/download/01simple (6).xlsx');
         return json($res);
     }
+
+    public function test2() {
+        $res = [];
+        $data = file_get_contents('/mnt/c/Users/Administrator/Documents/demo.json');
+        $data = json_decode($data, true);
+        $ledger = file_get_contents(runtime_path().DIRECTORY_SEPARATOR.'tmp.txt');
+        $ledger = json_decode($ledger,true);
+        $ledger = array_column($ledger, null, 'ledger_id');
+        foreach ($data['RECORDS'] as $val) {
+            $res[] = [
+                '账套' => $ledger[$val['ledger_id']]['ledger_name'],
+                '凭证号' => $val['no'],
+            ];
+        }
+        $this->excelService->exportXlsx(['账套','凭证号'],$res);
+    }
 }
