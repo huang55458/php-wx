@@ -102,6 +102,7 @@ class ExcelService extends \think\Service
     public function loadXlsx($filename) {
         $res = [];
         $spreadsheet = IOFactory::load($filename);
+//        $spreadsheet->setActiveSheetIndex(1);
         $sheet = $spreadsheet->getActiveSheet();
         $data = $sheet->toArray();
         $title = array_shift($data);
