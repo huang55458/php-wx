@@ -8,6 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
+use think\facade\Request;
 use think\facade\Route;
 
 Route::get('think', function () {
@@ -15,3 +16,8 @@ Route::get('think', function () {
 });
 
 Route::get('hello/:name', 'index/hello');
+
+// 默认访问public目录
+//Route::miss(static function() {
+//    return response(file_get_contents(root_path().Request::url()));
+//});

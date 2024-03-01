@@ -1,27 +1,29 @@
 <?php
+
 // 应用公共文件
-function jdd($var, $name=null)
+function jdd($var, $name = null)
 {
     header('Content-Type: application/json; charset=utf-8');
-    if(is_scalar($name)){
-        $var = [$name=>$var];
+    if(is_scalar($name)) {
+        $var = [$name => $var];
     }
     echo json_encode($var, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . PHP_EOL;
     die;
 }
 
-function test_curl($type='get',$param=[],$return='php'){
+function test_curl($type = 'get', $param = [], $return = 'php')
+{
     $ch = curl_init();
-    $url = $param['url']??'';
-    $headers = $param['headers']??[];
-    $cookie = $param['cookie']??'';
-    $data = $param['data']??[];
-    if (empty($url)){
+    $url = $param['url'] ?? '';
+    $headers = $param['headers'] ?? [];
+    $cookie = $param['cookie'] ?? '';
+    $data = $param['data'] ?? [];
+    if (empty($url)) {
         return [];
     }
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    if ($type === 'post'){
+    if ($type === 'post') {
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
     }
@@ -32,12 +34,12 @@ function test_curl($type='get',$param=[],$return='php'){
     $res = curl_exec($ch);
     curl_close($ch);
     if ($return === 'php') {
-        return json_decode($res,true);
+        return json_decode($res, true);
     }
     return $res;
 }
 
-function export_csv($file_name, $header = [], $body, $footer = [], $charset = 'GBK')
+function export_csv($file_name, $header, $body, $footer = [], $charset = 'GBK')
 {
     set_time_limit(400);
     header('Content-Type: application/octet-stream');
@@ -74,8 +76,9 @@ function export_csv($file_name, $header = [], $body, $footer = [], $charset = 'G
             foreach ($row_data as &$field) {
                 $field = iconv('UTF-8', $charset.'//TRANSLIT', $field);
                 if ((is_numeric($field) && (($field[0] == '0' && substr($field, 0, 2) !== '0.') || strlen($field) > 11))
-                    || (!is_numeric($field) and strpos($field, '-') !== false and checkTime($field) === false))
+                    || (!is_numeric($field) and strpos($field, '-') !== false and checkTime($field) === false)) {
                     $field = "\t" . $field;
+                }
             }
             unset($field);
             $low_cache_output($fp, $row_data);
@@ -85,8 +88,9 @@ function export_csv($file_name, $header = [], $body, $footer = [], $charset = 'G
             foreach ($row_data as &$field) {
                 $field = iconv('UTF-8', $charset.'//TRANSLIT', $field);
                 if ((is_numeric($field) && (($field[0] == '0' && substr($field, 0, 2) !== '0.') || strlen($field) > 11))
-                    || (!is_numeric($field) and strpos($field, '-') !== false and checkTime($field) === false))
+                    || (!is_numeric($field) and strpos($field, '-') !== false and checkTime($field) === false)) {
                     $field = "\t" . $field;
+                }
             }
             unset($field);
             $low_cache_output($fp, $row_data);
@@ -106,7 +110,8 @@ function export_csv($file_name, $header = [], $body, $footer = [], $charset = 'G
     fclose($fp);
 }
 
-function checkTime($string) {
+function checkTime($string)
+{
     if (
         date('Y-m-d H:i:s', strtotime($string)) === $string
         or date('Y-m-d', strtotime($string)) === $string

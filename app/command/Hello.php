@@ -1,4 +1,5 @@
 <?php
+
 namespace app\command;
 
 use app\utils\SendEmail;
@@ -20,10 +21,10 @@ class Hello extends Command
 
     protected function execute(Input $input, Output $output)
     {
-//        $name = trim($input->getArgument('name'));
+        //        $name = trim($input->getArgument('name'));
 
         if ($input->hasOption('send-email')) {
-//            $body = $input->getOption('send-email');
+            //            $body = $input->getOption('send-email');
             (new SendEmail()) -> run();
         }
 

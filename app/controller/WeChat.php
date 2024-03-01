@@ -1,5 +1,6 @@
 <?php
-declare (strict_types = 1);
+
+declare (strict_types=1);
 
 namespace app\controller;
 
@@ -22,7 +23,7 @@ class WeChat extends BaseController
     private object $api;
     private object $cache;
 
-    public function __construct(App $app,FileCache $cache)
+    public function __construct(App $app, FileCache $cache)
     {
         parent::__construct($app);
         $this->cache = $cache;
@@ -38,10 +39,10 @@ class WeChat extends BaseController
             'ghId' => env('GH_ID'),
             'appId' => env('APP_ID'),
             'appSecret' => env('APP_SECRET'),
-            'get_access_token' => function() use ($cache) {
+            'get_access_token' => function () use ($cache) {
                 return $cache->get('access_token');
             },
-            'save_access_token' => function($token) use ($cache) {
+            'save_access_token' => function ($token) use ($cache) {
                 $cache->set('access_token', $token, 7000);
             },
         ]);
@@ -78,7 +79,7 @@ class WeChat extends BaseController
                     ]);
                     break;
                 case '图片':
-                    $media_id = $weChatService->randomGenshinImage($this->api,$this->cache);
+                    $media_id = $weChatService->randomGenshinImage($this->api, $this->cache);
                     $this->message = $this->weChat->reply([
                         'type' => 'image',
                         'media_id' => $media_id,
@@ -116,7 +117,7 @@ class WeChat extends BaseController
     public function save()
     {
         $path = 'C:\Users\Administrator\Pictures\1693032653507.png';
-        $arr = $this->api->add_material(WX_Cnsts::IMAGE,$path);
+        $arr = $this->api->add_material(WX_Cnsts::IMAGE, $path);
         return json($arr);
     }
 
@@ -127,7 +128,7 @@ class WeChat extends BaseController
      */
     public function read()
     {
-        $arr = $this->api->get_materials(WX_Cnsts::IMAGE,0,20);
+        $arr = $this->api->get_materials(WX_Cnsts::IMAGE, 0, 20);
         return json($arr);
     }
 
@@ -140,7 +141,7 @@ class WeChat extends BaseController
     public function edit(string $media_id)
     {
         $arr = $this->api->get_material($media_id);
-        Log::info(json_encode($arr,256));
+        Log::info(json_encode($arr, 256));
     }
 
     /**
@@ -151,7 +152,7 @@ class WeChat extends BaseController
      */
     public function genMediaList(WeChatService $weChatService, string $key = WX_Cnsts::GENSHIN)
     {
-        return json($weChatService->genMediaList($this->api,$this->cache,$key));
+        return json($weChatService->genMediaList($this->api, $this->cache, $key));
     }
 
     /**

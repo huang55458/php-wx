@@ -1,7 +1,9 @@
 <?php
+
 namespace app\cnsts;
 
-class WeChat{
+class WeChat
+{
     public const TEXT = 'text';//文本
     public const IMAGE = 'image';//图片
     public const VOICE = 'voice';//语言

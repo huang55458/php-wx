@@ -1,5 +1,6 @@
 <?php
-declare (strict_types = 1);
+
+declare (strict_types=1);
 
 namespace app\controller;
 
@@ -7,12 +8,10 @@ use think\Request;
 
 class SQL
 {
-
-    function create_sql($table,$arr)
+    public function create_sql($table, $arr)
     {
-        foreach ($arr as $k => $v)
-        {
-            if ($k === 'id'){
+        foreach ($arr as $k => $v) {
+            if ($k === 'id') {
                 continue;
             }
 
@@ -21,13 +20,13 @@ class SQL
                 $val[] =  $v ;
             } elseif(is_null($v)) {
                 $val[] = 'null';
-            }else {
+            } else {
                 $val[] = "'" . $v . "'";
             }
 
         }
-        $f = implode(',',$f);
-        $val = implode(',',$val);
+        $f = implode(',', $f);
+        $val = implode(',', $val);
         return "insert into ".$table."(".$f.") values (".$val.");";
     }
     /**
@@ -39,14 +38,14 @@ class SQL
     {
         $file_path = runtime_path().DIRECTORY_SEPARATOR.'tmp.sql';
         $data = file_get_contents('C:\Users\Administrator\Documents\demo.json');
-        $data = json_decode($data,true)['RECORDS'];
+        $data = json_decode($data, true)['RECORDS'];
         foreach ($data as $v) {
             $v['group_id'] = 2024;
             $v['company_id'] = 61954;
             $v['pz_id'] = 3621;
-//            $v['group_id'] = 1000;
-//            $v['company_id'] = 2;
-//            $v['pz_id'] = 2621;
+            //            $v['group_id'] = 1000;
+            //            $v['company_id'] = 2;
+            //            $v['pz_id'] = 2621;
             $v['create_by'] = 61954;
             $v['update_by'] = 61954;
             $v['create_by_uid'] = 128863;

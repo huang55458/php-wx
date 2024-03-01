@@ -1,5 +1,6 @@
 <?php
-declare (strict_types = 1);
+
+declare (strict_types=1);
 
 namespace app\service;
 
@@ -17,7 +18,7 @@ class WeChatService extends \think\Service
      */
     public function register()
     {
-    	//
+        //
     }
 
     /**
@@ -30,43 +31,43 @@ class WeChatService extends \think\Service
         //
     }
 
-    public function genMediaList(Api $api,FileCache $cache,string $key)
+    public function genMediaList(Api $api, FileCache $cache, string $key)
     {
 
         $item_count = 20;
-        $images = $api->get_materials(WX_Cnsts::IMAGE,0,$item_count);
+        $images = $api->get_materials(WX_Cnsts::IMAGE, 0, $item_count);
         $total = $images[1]['total_count'];
 
-        $list = self::imageFactory($images[1]['item'],$key);
+        $list = self::imageFactory($images[1]['item'], $key);
         $num = ceil($total / $item_count);
-        if ($num > 1){
-            for ($i = 1; $i < $num; $i++){
-                $images = $api->get_materials(WX_Cnsts::IMAGE,$i,$item_count);
-                $list = array_merge($list, self::imageFactory($images[1]['item'],$key));
+        if ($num > 1) {
+            for ($i = 1; $i < $num; $i++) {
+                $images = $api->get_materials(WX_Cnsts::IMAGE, $i, $item_count);
+                $list = array_merge($list, self::imageFactory($images[1]['item'], $key));
             }
         }
-        $cache->set(WeChat::IMAGE_GENSHIN_LIST,$list,24*60*60);
+        $cache->set(WeChat::IMAGE_GENSHIN_LIST, $list, 24 * 60 * 60);
 
         return $list;
     }
 
-    public function randomGenshinImage(Api $api,FileCache $cache)
+    public function randomGenshinImage(Api $api, FileCache $cache)
     {
         $list = $cache->get(WeChat::IMAGE_GENSHIN_LIST);
-        if ($list === false){
-            $list = $this->genMediaList($api,$cache,WX_Cnsts::GENSHIN);
+        if ($list === false) {
+            $list = $this->genMediaList($api, $cache, WX_Cnsts::GENSHIN);
         }
 
         return $list[array_rand($list)];
     }
 
 
-    public static function imageFactory(array $images,string $key)
+    public static function imageFactory(array $images, string $key)
     {
         $list = [];
 
         foreach ($images as $image) {
-            if (strpos($image['name'],$key) !== false) {
+            if (strpos($image['name'], $key) !== false) {
                 $list[] = $image['media_id'];
             }
         }

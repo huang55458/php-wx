@@ -1,5 +1,6 @@
 <?php
-declare (strict_types = 1);
+
+declare (strict_types=1);
 
 namespace app\service;
 
@@ -21,7 +22,7 @@ class GatewayWorker
      */
     public static function onWorkerStart(Worker $businessWorker)
     {
-        $app = new Application;
+        $app = new Application();
         $app->initialize();
     }
 
@@ -62,7 +63,7 @@ class GatewayWorker
      */
     public static function onMessage($client_id, $data)
     {
-//        Gateway::sendToAll($data);
+        //        Gateway::sendToAll($data);
     }
 
     /**

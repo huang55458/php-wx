@@ -1,5 +1,6 @@
 <?php
-declare (strict_types = 1);
+
+declare (strict_types=1);
 
 namespace app\controller;
 
@@ -27,7 +28,8 @@ class Generator
     }
 
 
-    function gen_one_to_three() {
+    public function gen_one_to_three()
+    {
         for ($i = 1; $i <= 3; $i++) {
             Log::info(json_encode([__LINE__, $i], JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE));
             //注意变量$i的值在不同的yield之间是保持传递的。
@@ -43,7 +45,7 @@ class Generator
      */
     public function create()
     {
-//        str_contains();
+        //        str_contains();
         $result = match(1) {
             1, 2 => [],
             3 => "three",

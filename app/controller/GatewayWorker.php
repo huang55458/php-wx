@@ -1,8 +1,8 @@
 <?php
-declare (strict_types = 1);
+
+declare (strict_types=1);
 
 namespace app\controller;
-
 
 use Gaoming13\WechatPhpSdk\Utils\FileCache;
 use GatewayWorker\Lib\Gateway;
@@ -31,7 +31,7 @@ class GatewayWorker
     public function __construct(FileCache $cache)
     {
         $this->cache = $cache;
-        $worker_id_map = json_decode($this->cache->get('worker_id_map'),true);
+        $worker_id_map = json_decode($this->cache->get('worker_id_map'), true);
         if (empty($worker_id_map)) {
             $cache->set('worker_id_map', json_encode($this->map, 256));
         }
@@ -42,12 +42,12 @@ class GatewayWorker
      *
      * @return string|\think\Response
      */
-    public function send($uid,$message = '')
+    public function send($uid, $message = '')
     {
         if (empty($uid)) {
             return 'empty';
         }
-        $worker_id_map = json_decode($this->cache->get('worker_id_map'),true);
+        $worker_id_map = json_decode($this->cache->get('worker_id_map'), true);
         Gateway::sendToClient($worker_id_map[$uid], $message);
     }
 
@@ -60,9 +60,9 @@ class GatewayWorker
         if ($uid === null) {
             return 'empty';
         }
-        $worker_id_map = json_decode($this->cache->get('worker_id_map'),true);
+        $worker_id_map = json_decode($this->cache->get('worker_id_map'), true);
         $worker_id_map[$uid] = $client_id;
-        $this->cache->set('worker_id_map', json_encode($worker_id_map,256));
+        $this->cache->set('worker_id_map', json_encode($worker_id_map, 256));
     }
 
     /**

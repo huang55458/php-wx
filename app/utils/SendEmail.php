@@ -1,12 +1,15 @@
 <?php
+
 namespace app\utils;
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
-
-class SendEmail {
-    public function run() {
+class SendEmail
+{
+    public function run()
+    {
         //Create an instance; passing `true` enables exceptions
         $mail = new PHPMailer(true);
 
@@ -14,24 +17,24 @@ class SendEmail {
             //Server settings
             $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
             $mail->isSMTP();                                            //Send using SMTP
-            $mail->Host       = env('MAIL_HOST','');                     //Set the SMTP server to send through
+            $mail->Host       = env('MAIL_HOST', '');                     //Set the SMTP server to send through
             $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
-            $mail->Username   = env('MAIL_USER','');                     //SMTP username
-            $mail->Password   = env('MAIL_PASS','');                               //SMTP password
+            $mail->Username   = env('MAIL_USER', '');                     //SMTP username
+            $mail->Password   = env('MAIL_PASS', '');                               //SMTP password
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            //Enable implicit TLS encryption
             $mail->Port       = 465;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
 
             //Recipients
-            $mail->setFrom(env('MAIL_USER',''), 'test');
-//            $mail->addAddress('joe@example.net', 'Joe User');     //Add a recipient
-            $mail->addAddress(env('MAIL_USER',''));               //Name is optional
-//            $mail->addReplyTo('info@example.com', 'Information');
-//            $mail->addCC('cc@example.com');
-//            $mail->addBCC('bcc@example.com');
+            $mail->setFrom(env('MAIL_USER', ''), 'test');
+            //            $mail->addAddress('joe@example.net', 'Joe User');     //Add a recipient
+            $mail->addAddress(env('MAIL_USER', ''));               //Name is optional
+            //            $mail->addReplyTo('info@example.com', 'Information');
+            //            $mail->addCC('cc@example.com');
+            //            $mail->addBCC('bcc@example.com');
 
             //Attachments
-//            $mail->addAttachment('/var/tmp/file.tar.gz');         //Add attachments
-//            $mail->addAttachment('/tmp/image.jpg', 'new.jpg');    //Optional name
+            //            $mail->addAttachment('/var/tmp/file.tar.gz');         //Add attachments
+            //            $mail->addAttachment('/tmp/image.jpg', 'new.jpg');    //Optional name
 
             //Content
             $mail->isHTML();                                  //Set email format to HTML

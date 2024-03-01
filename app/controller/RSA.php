@@ -1,5 +1,6 @@
 <?php
-declare (strict_types = 1);
+
+declare (strict_types=1);
 
 namespace app\controller;
 
@@ -70,7 +71,7 @@ class RSA
      */
     public function test2()
     {
-        ini_set('max_execution_time',60*60);
+        ini_set('max_execution_time', 60 * 60);
         $this->rsa->generate();
         $this->rsa->cert();
         return json('success');
@@ -135,15 +136,15 @@ class RSA
     {
         $str = 'test';
         $pass = '12345';
-        $iv = openssl_random_pseudo_bytes(16,$crypto_strong) ;
+        $iv = openssl_random_pseudo_bytes(16, $crypto_strong) ;
         Log::info('$iv：'.$iv);
         if ($iv === false || $crypto_strong === false) {
             return ;
         }
-        $encrypt = base64_encode(openssl_encrypt($str, 'AES-256-CBC', $pass,  OPENSSL_RAW_DATA, $iv));
+        $encrypt = base64_encode(openssl_encrypt($str, 'AES-256-CBC', $pass, OPENSSL_RAW_DATA, $iv));
         Log::info('加密结果：'.$encrypt);
 
-        $decrypt = openssl_decrypt(base64_decode($encrypt), 'AES-256-CBC', $pass,  OPENSSL_RAW_DATA, $iv);
+        $decrypt = openssl_decrypt(base64_decode($encrypt), 'AES-256-CBC', $pass, OPENSSL_RAW_DATA, $iv);
         Log::info('解密结果：'.$decrypt);
     }
 }

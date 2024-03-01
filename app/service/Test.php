@@ -1,5 +1,6 @@
 <?php
-declare (strict_types = 1);
+
+declare (strict_types=1);
 
 namespace app\service;
 
@@ -12,7 +13,7 @@ class Test extends \think\Service
      */
     public function register()
     {
-    	//
+        //
     }
 
     /**

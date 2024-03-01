@@ -1,5 +1,6 @@
 <?php
-declare (strict_types = 1);
+
+declare (strict_types=1);
 
 namespace app\service;
 
@@ -17,18 +18,18 @@ class WorkerServer extends Server
     public function onWorkerStart($worker)
     {
         Log::write('onWorkerStart : '.$worker->getSocketName());
-//        bind('worker', $worker); 运行在不同进程中，无法绑定进tp进程
+        //        bind('worker', $worker); 运行在不同进程中，无法绑定进tp进程
 
         // 每20秒给所有人发条消息
-//        Timer::add(20, static function() use($worker){
-//            foreach($worker->connections as $connection) {
-//                $connection->send('hello');
-//            }
-//        });
+        //        Timer::add(20, static function() use($worker){
+        //            foreach($worker->connections as $connection) {
+        //                $connection->send('hello');
+        //            }
+        //        });
 
         $http_worker = new Worker("http://127.0.0.1:2347");
         // 当http客户端发来数据时触发
-        $http_worker->onMessage = function ($connection, $data) use ($worker){
+        $http_worker->onMessage = function ($connection, $data) use ($worker) {
             $_POST = $_POST ?: $_GET;
             // 推送数据的url格式 type=publish&to=uid&content=xxxx
             $to = @$_POST['to'];
@@ -63,10 +64,10 @@ class WorkerServer extends Server
         $connection->send('你好，'.spl_object_hash($connection));
     }
 
-    public function onMessage($connection,$data)
+    public function onMessage($connection, $data)
     {
         $connection->send('receive success');
-        if (is_string($data) && Str::contains($data,'auth_uid')) {
+        if (is_string($data) && Str::contains($data, 'auth_uid')) {
             $uid = explode(':', $data)[1];
             if (!isset($this->connectMap[$uid])) {
                 $this->connectMap[(int)$uid] = $connection;
