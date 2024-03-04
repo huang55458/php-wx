@@ -14,6 +14,9 @@ namespace think;
 
 require __DIR__ . '/../vendor/autoload.php';
 
+if (PHP_SAPI === 'cli') {  // php-fpm程序：fpm-fcgi  浏览器：cli-server 终端：cli
+    $_SERVER['PATH_INFO'] = $argv[1];
+}
 // 执行HTTP应用并响应
 $http = (new App())->http;
 
