@@ -15,6 +15,7 @@ Route::get('think', function () {
     return 'hello,ThinkPHP6!';
 });
 
+//  localhost/Index/hello 这种方式将无法访问（配置了下面的）
 Route::get('hello/:name', 'index/hello');
 
 // 默认访问public目录
