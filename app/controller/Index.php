@@ -3,13 +3,39 @@
 namespace app\controller;
 
 use app\BaseController;
+use app\cnsts\ERRNO;
+use think\App;
 use think\facade\Db;
+use think\facade\View;
 
 class Index extends BaseController
 {
+    public function __construct(App $app)
+    {
+        parent::__construct($app);
+    }
+
     public function index()
     {
-        return '<style>*{ padding: 0; margin: 0; }</style><iframe src="https://www.thinkphp.cn/welcome?version=' . \think\facade\App::version() . '" width="100%" height="100%" frameborder="0" scrolling="auto"></iframe>';
+        if ((string)env()['START_LOGIN'] === 'true') {
+            View::engine()->layout(false);
+            return view('index/login');
+        }
+        return view('index/index');
+    }
+
+    public function login()
+    {
+        $user = Db::table('user')->where('name', '=', $_REQUEST['name'])->column('id,password');
+        if (isset($user[0]['password']) && password_verify($_REQUEST['password'],$user[0]['password'])) {
+            session('USER_ID',$user[0]['id']);
+            return redirect('/');
+        }
+        return doResponse(ERRNO::USER_PWD_ERROR, ERRNO::e(ERRNO::USER_PWD_ERROR), []);
+    }
+
+    public function logout() {
+        session(null);
     }
 
     public function hello($name = 'ThinkPHP8')

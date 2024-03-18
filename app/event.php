@@ -9,7 +9,7 @@ return [
 
     'listen'    => [
         'Test'     => [app\listener\Test::class],
-        'AppInit'  => [],
+        'AppInit'  => [app\listener\Refresh::class],
         'HttpRun'  => [],
         'HttpEnd'  => [],
         'LogLevel' => [],

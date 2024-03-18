@@ -1,6 +1,10 @@
 <?php
 
 // 应用公共文件
+use app\cnsts\ERRNO;
+use think\response\Json;
+use think\response\View;
+
 function jdd($var, $name = null)
 {
     header('Content-Type: application/json; charset=utf-8');
@@ -120,4 +124,71 @@ function checkTime($string)
     } else {
         return false;
     }
+}
+
+/**
+ * 获取客户端IP地址
+ * @param integer $type 返回类型 0 返回IP地址 1 返回IPV4地址数字
+ * @param boolean $adv 是否进行高级模式获取（有可能被伪装）
+ * @return mixed
+ */
+function get_ip(int $type = 0, bool $adv = false): mixed
+{
+    $type       =  $type ? 1 : 0;
+    static $ip  =   NULL;
+    if ($ip !== NULL) return $ip[$type];
+    if($adv){
+        if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $arr    =   explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+            $pos    =   array_search('unknown',$arr);
+            if(false !== $pos) unset($arr[$pos]);
+            $ip     =   trim($arr[0]);
+        }elseif (isset($_SERVER['HTTP_CLIENT_IP'])) {
+            $ip     =   $_SERVER['HTTP_CLIENT_IP'];
+        }elseif (isset($_SERVER['REMOTE_ADDR'])) {
+            $ip     =   $_SERVER['REMOTE_ADDR'];
+        }
+    }elseif (isset($_SERVER['REMOTE_ADDR'])) {
+        $ip     =   $_SERVER['REMOTE_ADDR'];
+    }
+    // IP地址合法验证
+    if (filter_var($ip, \FILTER_VALIDATE_IP,\FILTER_FLAG_IPV4)) {
+        $long = sprintf("%u",ip2long($ip));
+        $ip   = $long ? array($ip, $long) : array('0.0.0.0', 0);
+    } elseif (filter_var($ip, \FILTER_VALIDATE_IP,\FILTER_FLAG_IPV6)) {
+        $long = ip2long6($ip);
+        $ip   = $long ? array($ip, $long) : array('::', 0);
+    }
+    return $ip[$type];
+}
+
+/**
+ * IPV6 地址转换为整数
+ * @param $ip
+ * @return string
+ */
+function ip2long6($ip)
+{
+    if(($ip_n = inet_pton($ip)) === false) return false;
+    $bits = 15; // 16 x 8 bit = 128bit (ipv6)
+    while ($bits >= 0)
+    {
+        $bin = sprintf("%08b",(ord($ip_n[$bits])));
+        $ipbin = $bin.$ipbin;
+        $bits--;
+    }
+    return $ipbin;
+}
+
+function doResponse($errno = ERRNO::SUCCESS, $errmsg = 'success', $res = [], $tpl = ""): View|Json
+{
+    $resp = [
+        "errno"  => $errno,
+        "errmsg" => $errmsg,
+        "res"    => $res,
+    ];
+    if (empty($tpl)) {
+        return \json($resp);
+    }
+    return view($tpl, $resp);
 }
