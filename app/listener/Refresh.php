@@ -6,6 +6,7 @@ namespace app\listener;
 
 use app\Request;
 use think\facade\Cache;
+use think\helper\Str;
 
 class Refresh
 {
@@ -17,7 +18,7 @@ class Refresh
      */
     public function handle($event, Request $request): mixed
     {
-        if ((string)$request->env()['START_LOGIN'] === 'true') {
+        if ((string)$request->env()['START_LOGIN'] === 'true' && !Str::startsWith($_SERVER['PATH_INFO'],'/static')) {
             $ip = get_ip(0, true);
             if (Cache::get($ip) === null) {
                 Cache::set($ip, 'true', 1);

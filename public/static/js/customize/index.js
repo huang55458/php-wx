@@ -27,7 +27,7 @@ layui.use(['element', 'layer', 'util'], function(){
 
     $(document).on('click', '#logout', function(){
         $.ajax({
-            url: '/api/Home/Index/logout',
+            url: '/Index/logout',
             type: 'GET',
             data: '',
             dataType: 'json',

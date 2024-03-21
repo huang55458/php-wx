@@ -159,7 +159,7 @@ function get_ip(int $type = 0, bool $adv = false): mixed
         $long = ip2long6($ip);
         $ip   = $long ? array($ip, $long) : array('::', 0);
     }
-    return $ip[$type];
+    return $ip[$type] ?? '';
 }
 
 /**
