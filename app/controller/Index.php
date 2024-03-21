@@ -17,7 +17,7 @@ class Index extends BaseController
 
     public function index()
     {
-        if ((string)env()['START_LOGIN'] === 'true') {
+        if ((string)env()['START_LOGIN'] === 'true' && session('USER_ID') === null) {
             View::engine()->layout(false);
             return view('index/login');
         }
@@ -36,6 +36,7 @@ class Index extends BaseController
 
     public function logout() {
         session(null);
+        return doResponse(ERRNO::SUCCESS, ERRNO::e(ERRNO::SUCCESS), []);
     }
 
     public function hello($name = 'ThinkPHP8')
