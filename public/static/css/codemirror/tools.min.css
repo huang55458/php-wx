@@ -1,0 +1,469 @@
+.CodeMirror {
+    height: calc(100vh - 143px);
+    font-size: 15px;
+    font-family: Consolas, sans-serif;
+    border-left: solid 1px #e2e2e2
+}
+
+.CodeMirror-gutters {
+    min-width: 48px;
+    background-color: white;
+    border-right-color: #e1e1e1
+}
+
+.CodeMirror-guttermarker-subtle {
+    color: #272727;
+    font-size: 18px;
+    font-family: monospace;
+    font-weight: bold
+}
+
+.CodeMirror-foldgutter {
+    width: 17px
+}
+
+.CodeMirror-foldgutter-folded {
+    color: #f5952e !important
+}
+
+.CodeMirror pre.CodeMirror-line, .CodeMirror-linenumber {
+    padding: 1px 4px;
+    word-break: break-all
+}
+
+.CodeMirror-foldmarker {
+    color: #f5952e;
+    text-shadow: none
+}
+
+.CodeMirror-lint-mark-error {
+    color: #ff5656 !important;
+    background-color: #fffcd2 !important;
+    font-style: italic
+}
+
+.CodeMirror-lint-marker-error, .CodeMirror-lint-message-error {
+    background-image: none
+}
+
+.CodeMirror-lint-message-error, .CodeMirror-lint-message-warning {
+    padding-left: 3px
+}
+
+.CodeMirror-lint-tooltip {
+    border-radius: 2px;
+    border-color: #d6d6d6
+}
+
+.CodeMirror-merge-gap {
+    background-color: #fff
+}
+
+.CodeMirror-merge-copy, .CodeMirror-merge-copy-reverse {
+    color: #909090
+}
+
+.CodeMirror-merge-scrolllock-wrap {
+    display: none
+}
+
+.CodeMirror-merge-r-chunk {
+    background-color: #e8e8e8
+}
+
+.CodeMirror-merge-r-chunk-start {
+    border-top: 0
+}
+
+.CodeMirror-merge-r-chunk-end {
+    border-bottom: 0
+}
+
+.CodeMirror-merge-r-connect {
+    fill: #e8e8e8;
+    stroke: #e8e8e8
+}
+
+.CodeMirror-merge-2pane .CodeMirror-merge-pane {
+    width: 48%
+}
+
+.CodeMirror-merge-2pane .CodeMirror-merge-gap {
+    border-color: #e8e8e8
+}
+
+.CodeMirror-placeholder {
+    color: #bcbcbc !important
+}
+
+.layui-col-right .CodeMirror-gutters {
+    border-right-color: #e8e8e8
+}
+
+.layui-col-right .CodeMirror {
+    border-left-color: #e8e8e8
+}
+
+.layui-container {
+    width: 100%;
+    padding: 0 5px
+}
+
+.tool-container {
+    width: 70%
+}
+
+.tool-div {
+    margin-top: 40px
+}
+
+.tool-div #copy {
+    margin-left: 8px
+}
+
+.tool-div .btns-row .caption {
+    margin-left: 20px
+}
+
+.tool-div .btns-row .layui-form-select {
+    width: 110px;
+    display: inline-block
+}
+
+.tool-div .btns-row .layui-form-select dl dd {
+    font-size: 13px
+}
+
+.tool-div .editor-row {
+    border-left: 0
+}
+
+.tool-div .editor-row .CodeMirror {
+    height: calc(100vh - 244px)
+}
+
+.tool-div .btns-row .layui-form {
+    display: inline-block;
+    margin-left: 20px
+}
+
+.right-btn {
+    background: transparent;
+    border: 0;
+    color: #000;
+    font-size: 13px
+}
+
+.right-btn:hover {
+    color: #666;
+    opacity: 1
+}
+
+.black .right-btn {
+    color: #ddd;
+    background-color: transparent
+}
+
+.black .right-btn:hover {
+    color: #ddd;
+    opacity: .8
+}
+
+.layui-input {
+    padding: 8px 6px
+}
+
+.layui-col-left {
+    width: 37%
+}
+
+.layui-col-right {
+    width: 63%
+}
+
+.layui-col-left, .layui-col-right {
+    float: left;
+    position: relative;
+    display: block;
+    box-sizing: border-box;
+    white-space: nowrap
+}
+
+.editor-row {
+    border: solid 1px #e2e2e2
+}
+
+.btns-row .layui-col-left .layui-form, .btns-row .my-form {
+    display: inline-block;
+    margin-left: 12px
+}
+
+.btns-row .layui-input {
+    display: inline-block;
+    margin: 0 5px;
+    height: 32px;
+    font-family: Consolas, sans-serif
+}
+
+.btns-row .layui-btn {
+    margin: 10px 0 10px 8px
+}
+
+.btns-row .right-btn {
+    margin-left: 4px
+}
+
+.other-btns {
+    float: right
+}
+
+.layui-btn-sm i {
+    font-size: 12px !important;
+    margin-left: 4px
+}
+
+#clear, #copy {
+    margin-left: 0
+}
+
+#sample {
+    color: #888
+}
+
+#sample:hover {
+    opacity: .8
+}
+
+#fold {
+    font-size: 16px
+}
+
+@keyframes slideIn {
+    from {
+        left: 17%;
+        right: 17%;
+        opacity: .9
+    }
+    to {
+        left: 14%;
+        right: 14%;
+        opacity: 1
+    }
+}
+
+@-webkit-keyframes slideIn {
+    from {
+        left: 17%;
+        right: 17%;
+        opacity: .9
+    }
+    to {
+        left: 14%;
+        right: 14%;
+        opacity: 1
+    }
+}
+
+.CodeMirror-fullscreen {
+    position: fixed;
+    top: 0;
+    left: 14%;
+    right: 14%;
+    bottom: 0;
+    height: auto;
+    z-index: 11;
+    border-left: 0;
+    animation: slideIn .3s ease-in-out
+}
+
+#content, #result {
+    height: calc(100vh - 146px)
+}
+
+.tool-btn-row {
+    float: right;
+    margin: 20px 20px 0 0
+}
+
+.set-div .layui-tab-card {
+    border: 0;
+    border-radius: 0;
+    box-shadow: none
+}
+
+.set-div .layui-tab-card > .layui-tab-title {
+    color: #888;
+    background: #fafafa;
+    border: 1px solid #eee
+}
+
+.set-div .layui-tab-card > .layui-tab-title li:hover {
+    color: #444;
+    transition: all .3s
+}
+
+.set-div .layui-tab-card > .layui-tab-title .layui-this:after {
+    border-radius: 0
+}
+
+.set-div.layui-layer-wrap {
+    padding: 0 30px
+}
+
+.set-div .layui-tab-content {
+    padding: 25px 10px 0
+}
+
+.set-div .layui-slider {
+    background-color: #d2d2d2;
+    display: inline-block;
+    height: 2px;
+    top: 7px;
+    width: 160px
+}
+
+.set-div .layui-slider-bar {
+    background-color: #d2d2d2 !important
+}
+
+.set-div .layui-slider-wrap {
+    top: -17px
+}
+
+.set-div .layui-slider-wrap-btn {
+    border: 1px solid #bbb !important;
+    width: 10px;
+    height: 10px
+}
+
+.set-div .layui-form-item {
+    margin-bottom: 6px
+}
+
+.set-div .layui-form-label {
+    padding: 9px 20px;
+    line-height: 17px
+}
+
+.set-div .layui-row {
+    padding: 1px 44px
+}
+
+.set-div .first-row {
+    padding: 7px 44px
+}
+
+.set-div #guide {
+    color: #222;
+    background-color: #fff;
+    font-size: 14px;
+    margin-top: 2px;
+    padding: 0 44px
+}
+
+.set-div #guide:hover {
+    color: #1888f8;
+    transition: all .3s
+}
+
+.set-div .layui-tab-item .help {
+    margin: 10px 40px;
+    line-height: 20px
+}
+
+.set-div .layui-tab-item p {
+    margin: 6px 44px
+}
+
+.CodeMirror-dialog {
+    position: absolute;
+    left: 0;
+    right: 0;
+    background: inherit;
+    z-index: 15;
+    padding: .1em .8em;
+    overflow: hidden;
+    color: inherit;
+    font-family: Consolas sans-serif
+}
+
+.CodeMirror-dialog-top {
+    border-bottom: 1px solid #eee;
+    top: 0
+}
+
+.CodeMirror-dialog-bottom {
+    border-top: 1px solid #eee;
+    bottom: 0
+}
+
+.CodeMirror-dialog input {
+    border: 0;
+    outline: 0;
+    background: transparent;
+    width: 20em;
+    color: inherit;
+    font: 14px Consolas, sans-serif !important
+}
+
+.CodeMirror-dialog button {
+    font-size: 70%
+}
+
+.CodeMirror-search-match {
+    background: gold;
+    border-top: 1px solid orange;
+    border-bottom: 1px solid orange;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    opacity: .8
+}
+
+.CodeMirror-simplescroll-horizontal div, .CodeMirror-simplescroll-vertical div {
+    position: absolute;
+    background: #ccc;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    border: 1px solid #bbb;
+    border-radius: 2px
+}
+
+.CodeMirror-simplescroll-horizontal, .CodeMirror-simplescroll-vertical {
+    position: absolute;
+    z-index: 6;
+    background: #eee
+}
+
+.CodeMirror-simplescroll-horizontal {
+    bottom: 0;
+    left: 0;
+    height: 8px
+}
+
+.CodeMirror-simplescroll-horizontal div {
+    bottom: 0;
+    height: 100%
+}
+
+.CodeMirror-simplescroll-vertical {
+    right: 0;
+    top: 0;
+    width: 8px
+}
+
+.CodeMirror-simplescroll-vertical div {
+    right: 0;
+    width: 100%
+}
+
+.cover-div {
+    display: block;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    background: black;
+    opacity: .3;
+    z-index: 10;
+}
