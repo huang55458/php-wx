@@ -18,7 +18,7 @@ class Refresh
      */
     public function handle($event, Request $request): mixed
     {
-        if ( $_SERVER['PATH_INFO'] !== '' && (string)$request->env()['START_LOGIN'] === 'true' && !Str::startsWith($_SERVER['PATH_INFO'],'/static')) {
+        if (isset($_SERVER['PATH_INFO']) && $_SERVER['PATH_INFO'] !== '' && (string)$request->env()['START_LOGIN'] === 'true' && !Str::startsWith($_SERVER['PATH_INFO'],'/static')) {
             $ip = get_ip(0, true);
             if (Cache::get($ip) === null) {
                 Cache::set($ip, 'true', 1);
