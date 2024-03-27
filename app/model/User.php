@@ -12,7 +12,7 @@ use think\Model;
 class User extends Model
 {
     // 设置json类型字段
-    protected $json = ['ext'];
+//    protected $json = ['ext'];
 
     // 定义全局的查询范围
     protected $globalScope = ['status'];
@@ -27,4 +27,9 @@ class User extends Model
         $status = [1=>'是',0=>'否'];
         return $status[$value];
     }
+//    public function setIsAdminAttr($value)
+//    {
+//        $status = ['是'=>1,'否'=>0];
+//        return $status[$value];
+//    }
 }

@@ -12,6 +12,7 @@ class ERRNO
     const NO_LOGIN = -102;
     const MQ_TOPIC_NOT_EXISTS = -103;
     const EMAIL_SEND_FAILED = -104;
+    const DB_FAIL = -105;
 
     const ERRNO_DICTS = [
         self::SUCCESS             => "成功",
@@ -19,6 +20,7 @@ class ERRNO
         self::NO_LOGIN => '未登录',
         self::MQ_TOPIC_NOT_EXISTS => '消息队列不存在',
         self::EMAIL_SEND_FAILED => '邮件发送失败',
+        self::DB_FAIL => '数据库操作失败',
     ];
 
     /**

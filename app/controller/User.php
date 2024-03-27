@@ -17,14 +17,25 @@ class User
      *
      * @return \think\Response
      */
-    public function index($page = 1, $limit = 10)
+    public function index(int $page = 1, int $limit = 10, $sortField = '',$sortOrder = '')
     {
-        $data = \app\model\User::limit(($page-1)*$limit,$limit)->select();
-        $count = \app\model\User::count();
+        $where = [];
+        !empty(\request()->param('name')) && $where['name'] = trim(\request()->param('name'));
+        !empty(\request()->param('telephone')) && $where['telephone'] = trim(\request()->param('telephone'));
+        if (!empty(\request()->param('create_time'))) {
+            [$start_time,$end_time] = explode(' - ',\request()->param('create_time'));
+            $where[] = ['create_time', 'between', [$start_time,$end_time]];
+        }
+
+        $data = \app\model\User::where($where)->order($sortField,$sortOrder)->limit(($page-1)*$limit,$limit)->select();
+        $count = \app\model\User::where($where)->count();
         $totalRow = [
-            'tang' => 1,
-            'song' => 1,
-            'xian' => 1,
+            'ext' => [
+                'tang' => 1,
+                'song' => 1,
+                'xian' => 1,
+            ],
+            'id' => $count,
         ];
         $resp = [
             'code' => $this->errno,
@@ -52,9 +63,15 @@ class User
      * @param  \think\Request  $request
      * @return \think\Response
      */
-    public function save(Request $request)
+    public function save(string $data,\app\model\User $user)
     {
-        //
+        $data = json_decode($data, true);
+        foreach ($data as $key => $value) {
+            $key === 'password' && $value = password_hash($value,PASSWORD_BCRYPT);
+            $user->$key = $value;
+        }
+        $user->save() || $this->errno = ERRNO::DB_FAIL;
+        return doResponse($this->errno,ERRNO::e($this->errno),[]);
     }
 
     /**
@@ -86,9 +103,11 @@ class User
      * @param  int  $id
      * @return \think\Response
      */
-    public function update(Request $request, $id)
+    public function update(string $data = '', int $id = 0)
     {
-        //
+        $data = json_decode($data,true);
+        \app\model\User::update($data,['id' => $id]);
+        return doResponse($this->errno,ERRNO::e($this->errno),[]);
     }
 
     /**
@@ -97,8 +116,9 @@ class User
      * @param  int  $id
      * @return \think\Response
      */
-    public function delete($id)
+    public function delete(int $id = 0)
     {
-        //
+        \app\model\User::update(['status' => 0],['id' => $id]);
+        return doResponse($this->errno,ERRNO::e($this->errno),[]);
     }
 }

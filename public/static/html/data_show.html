@@ -1,7 +1,39 @@
 <div style="padding: 16px;">
+  <form class="layui-form layui-row layui-col-space16">
+    <div class="layui-col-md3">
+      <div class="layui-input-wrap">
+        <div class="layui-input-prefix">
+          <i class="layui-icon layui-icon-username"></i>
+        </div>
+        <input type="text" name="name" value="" placeholder="用户名" class="layui-input" lay-affix="clear">
+      </div>
+    </div>
+    <div class="layui-col-md3">
+      <div class="layui-input-wrap">
+        <div class="layui-input-prefix">
+          <i class="layui-icon layui-icon-cellphone"></i>
+        </div>
+        <input type="text" name="telephone" placeholder="电话号码" lay-affix="clear" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-col-md3">
+      <div class="layui-input-wrap">
+        <div class="layui-input-prefix">
+          <i class="layui-icon layui-icon-date"></i>
+        </div>
+        <input type="text" name="create_time" readonly placeholder="创建时间" class="layui-input demo-table-search-date">
+      </div>
+    </div>
+    <div class="layui-col-md3 layui-btn-container">
+      <button class="layui-btn" lay-submit lay-filter="demo-table-search">Search</button>
+      <button type="reset" class="layui-btn layui-btn-primary">Clear</button>
+    </div>
+  </form>
+  <br class="ws-space-16">
   <table class="layui-hide" id="test" lay-filter="test"></table>
 </div>
 
+<script src='/static/js/crypto-js.min.js'></script>
 <script type="text/html" id="toolbarDemo">
   <div class="layui-btn-container">
     <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
@@ -33,6 +65,9 @@
   layui.use(['table', 'dropdown'], function () {
     const table = layui.table;
     const dropdown = layui.dropdown;
+    const form = layui.form;
+    const laydate = layui.laydate;
+    const $ = layui.$;
 
     // 创建渲染实例
     table.render({
@@ -48,34 +83,32 @@
       css: [ // 重设当前表格样式
         '.layui-table-tool-temp{padding-right: 145px;}'
       ].join(''),
-      cellMinWidth: 80,
+      cellMinWidth: 60,
       totalRow: true, // 开启合计行
       page: true,
       editTrigger: 'dblclick', // 设定单元格编辑的事件触发方式
       cols: [[
         {type: 'checkbox', fixed: 'left'},
-        {field: 'id', fixed: 'left', width: 70, title: 'ID', sort: true, totalRow: '合计：'},
+        {field: 'id', fixed: 'left', width: 80, title: 'ID', sort: true, totalRow: '{{= parseInt(d.TOTAL_ROW.id) }} 条'},
         {field: 'name', width: 120, edit: 'text', title: '用户名'},
         {
           field: 'telephone',
           title: '电话号码 <i class="layui-icon layui-icon-tips layui-font-14" lay-event="email-tips" title="该字段开启了编辑功能" style="margin-left: 5px;"></i>',
           fieldTitle: '电话号码',
-          hide: 0,
-          width: 110,
-          expandedMode: 'tips',
+          width: 120,
           edit: 'text'
         },
-        {field: 'sex', width: 80, edit: 'text', title: '性别', sort: true},
+        {field: 'sex', width: 60, edit: 'text', title: '性别'},
         {
           field: 'ext',
           title: '额外信息',
           edit: 'textarea',
           minWidth: 260,
-          expandedWidth: 260,
-          totalRow: '人物：<span class="layui-badge-rim">唐代：{{= d.TOTAL_ROW.tang }} </span> <span class="layui-badge-rim">宋代：{{= d.TOTAL_ROW.song }}</span> <span class="layui-badge-rim">现代：{{= d.TOTAL_ROW.xian }}</span>'
+          expandedMode: 'tips',
+          totalRow: '人物：<span class="layui-badge-rim">唐代：{{= d.TOTAL_ROW.ext.tang }} </span> <span class="layui-badge-rim">宋代：{{= d.TOTAL_ROW.ext.song }}</span> <span class="layui-badge-rim">现代：{{= d.TOTAL_ROW.ext.xian }}</span>'
         },
-        {field: 'is_admin', width: 100, title: '管理员', sort: true, totalRow: '{{= d.TOTAL_NUMS }} 😊'},
-        {field: 'mark', title: '备注', edit: 'text', width: 100, totalRow: '{{= parseInt(d.TOTAL_NUMS) }} 次'},
+        {field: 'is_admin', width: 80, title: '管理员', totalRow: '{{= console.log("d", d) }} console'},
+        {field: 'mark', title: '备注', edit: 'text', width: 120, totalRow: '{{= parseInt(d.TOTAL_NUMS) }}'},
         {field: 'create_time', title: '创建时间', width: 160},
         {field: 'update_time', title: '更新时间', width: 160},
         {fixed: 'right', title: '操作', width: 134, minWidth: 125, toolbar: '#barDemo'}
@@ -94,6 +127,9 @@
           }, {
             id: 'delete',
             title: '删除'
+          }, {
+            id: 'sort_switch',
+            title: '排序切换'
           }],
           // 菜单被点击的事件
           click: function (obj) {
@@ -102,10 +138,95 @@
             switch (obj.id) {
               case 'add':
                 layer.open({
-                  title: '添加',
                   type: 1,
-                  area: ['80%', '80%'],
-                  content: '<div style="padding: 16px;">自定义表单元素</div>'
+                  area: ['50%', '80%'],
+                  resize: false,
+                  shadeClose: true,
+                  title: '添加用户测试',
+                  content: `
+          <div class="layui-form layui-form-pane" lay-filter="filter-test-layer" style="margin: 16px;">
+                 <div class="layui-form-item">
+                  <label class="layui-form-label">用户名</label>
+                  <div class="layui-input-block">
+                    <input type="text" name="name" autocomplete="off" placeholder="请输入用户名" lay-verify="required" class="layui-input">
+                  </div>
+                </div>
+                 <div class="layui-form-item">
+                  <label class="layui-form-label">密码：</label>
+                  <div class="layui-input-inline">
+                    <input type="password" name="password" placeholder="请输入密码" lay-verify="password" autocomplete="off" class="layui-input">
+                  </div>
+                </div>
+                <div class="layui-form-item">
+                  <label class="layui-form-label">电话</label>
+                  <div class="layui-input-block">
+                    <input type="text" name="telephone" autocomplete="off" placeholder="请输入用户名" lay-verify="telephone" class="layui-input">
+                  </div>
+                </div>
+                <div class="layui-form-item" pane>
+                  <label class="layui-form-label">性别：</label>
+                  <div class="layui-input-block">
+                    <input type="radio" name="sex" value="男" title="男" checked>
+                    <input type="radio" name="sex" value="女" title="女">
+                  </div>
+                </div>
+                <div class="layui-form-item">
+                  <label class="layui-form-label">备注</label>
+                  <div class="layui-input-block">
+                    <input type="text" name="mark" autocomplete="off" placeholder="备注" class="layui-input">
+                  </div>
+                </div>
+                <div class="layui-form-item layui-form-text">
+                  <label class="layui-form-label">ext</label>
+                  <div class="layui-input-block">
+                    <textarea placeholder="额外内容" name="ext" class="layui-textarea"></textarea>
+                  </div>
+                </div>
+                 <div class="layui-form-item">
+                    <button class="layui-btn" lay-submit lay-filter="demo2">确认</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+          </div>
+        `,
+                  success: function(){
+                    // 对弹层中的表单进行初始化渲染
+                    form.render();
+                    form.verify({
+                      telephone: [
+                        /^(?:(?:\+|00)86)?1(?:(?:3[\d])|(?:4[5-79])|(?:5[0-35-9])|(?:6[5-7])|(?:7[0-8])|(?:8[\d])|(?:9[189]))\d{8}$/
+                        ,'手机号格式不正确'
+                      ]
+                      ,password: [
+                        /^[\S]{6,12}$/
+                        ,'密码必须6到12位，且不能出现空格'
+                      ]
+                    });
+                    // 表单提交事件
+                    form.on('submit(demo2)', function(data){
+                      let field = data.field; // 获取表单字段值
+                      field.password = CryptoJS.MD5(field.password).toString()
+                      // 显示填写结果，仅作演示用
+                      // layer.alert(JSON.stringify(field), {
+                      //   title: '当前填写的字段值'
+                      // });
+                      // 此处可执行 Ajax 等操作
+                      $.ajax({
+                        url: '/User/save',
+                        type: 'POST',
+                        data: {data: JSON.stringify(field)},
+                        dataType: 'json',
+                        success: function(res) {
+                          if (res.errno === 0) {
+                            layer.msg('添加用户成功', {icon: 1});
+                          } else {
+                            layer.msg(res.errmsg, {icon: 2});
+
+                          }
+                        },
+                      });
+                      return false; // 阻止默认 form 跳转
+                    });
+                  }
                 });
                 break;
               case 'update':
@@ -122,6 +243,12 @@
                   return layer.msg('请选择一行');
                 }
                 layer.msg('delete event');
+                break;
+              case 'sort_switch':
+                table.reload('test', {
+                  autoSort: !table.getOptions('test').autoSort
+                });
+                layer.msg(table.getOptions('test').autoSort ? '已切换成前端排序' : '已切换成后端排序');
                 break;
             }
           }
@@ -302,9 +429,18 @@
               layer.msg('查看操作，当前行 ID:' + data.id);
             } else if (menudata.id === 'del') {
               layer.confirm('真的删除行 [id: ' + data.id + '] 么', function (index) {
-                obj.del(); // 删除对应行（tr）的DOM结构
                 layer.close(index);
                 // 向服务端发送删除指令
+                $.ajax({
+                  url: '/User/delete',
+                  type: 'DELETE',
+                  data: {"id":data.id},
+                  dataType: 'json',
+                  success: function(res) {
+                    layer.msg('删除成功', {icon: 1});
+                    obj.del(); // 删除对应行（tr）的DOM结构
+                  },
+                });
               });
             }
           },
@@ -336,24 +472,106 @@
 
     // 单元格编辑事件
     table.on('edit(test)', function (obj) {
-      var field = obj.field; // 得到字段
-      var value = obj.value; // 得到修改后的值
-      var data = obj.data; // 得到所在行所有键值
+      let field = obj.field; // 得到字段
+      let value = obj.value; // 得到修改后的值
+      let data = obj.data; // 得到所在行所有键值
       // 值的校验
-      if (field === 'email') {
-        if (!/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/.test(obj.value)) {
-          layer.tips('输入的邮箱格式不正确，请重新编辑', this, {tips: 1});
+      if (field === 'telephone') {
+        if (!/^(?:(?:\+|00)86)?1\d{10}$/.test(obj.value)) {
+          layer.tips('输入的手机号格式不正确，请重新编辑', this, {tips: 1});
           return obj.reedit(); // 重新编辑 -- v2.8.0 新增
         }
       }
       // 编辑后续操作，如提交更新请求，以完成真实的数据更新
-      // …
-      layer.msg('编辑成功', {icon: 1});
+      $.ajax({
+        url: '/User/update',
+        type: 'PUT',
+        data: {"id": data.id, 'data': JSON.stringify({[field]: value})},
+        dataType: 'json',
+        success: function(res) {
+          layer.msg('修改成功', {icon: 1});
+        },
+        error: function(res) {
+          layer.msg('修改失败', {icon: 2});
+        },
+      });
 
       // 其他更新操作
-      var update = {};
+      let update = {};
       update[field] = value;
       obj.update(update);
+    });
+
+    // 后端排序事件
+    table.on('sort(test)', function(obj){
+      console.log(obj.field); // 当前排序的字段名
+      console.log(obj.type); // 当前排序类型：desc（降序）、asc（升序）、null（空对象，默认排序）
+      console.log(this); // 当前排序的 th 对象
+
+      table.reloadData('test', {
+        initSort: obj, // 记录初始排序，如果不设的话，将无法标记表头的排序状态。
+        where: { // 请求参数（注意：这里面的参数可任意定义，并非下面固定的格式）
+          sortField: obj.field, // 排序字段
+          sortOrder: obj.type // 排序方式
+        }
+      },true);
+    });
+
+    // 日期
+    laydate.render({
+      elem: ".demo-table-search-date",
+      type: "datetime",
+      range: true,
+      shortcuts: [
+        {
+          text: "上个月",
+          value: function(){
+            let date = new Date();
+            let year = date.getFullYear();
+            let month = date.getMonth();
+            return [
+              new Date(year, month - 1, 1),
+              new Date(year, month, 0, 23, 59, 59)
+            ];
+          }
+        },
+        {
+          text: "这个月",
+          value: function(){
+            let date = new Date();
+            let year = date.getFullYear();
+            let month = date.getMonth();
+            return [
+              new Date(year, month, 1),
+              new Date(year, month + 1, 0, 23, 59, 59)
+            ];
+          }
+        },
+        {
+          text: "下个月",
+          value: function(){
+            let date = new Date();
+            let year = date.getFullYear();
+            let month = date.getMonth();
+            return [
+              new Date(year, month + 1, 1),
+              new Date(year, month + 2, 0, 23, 59, 59)
+            ];
+          }
+        }
+      ]
+    });
+    // 搜索提交
+    form.on('submit(demo-table-search)', function(data){
+      const field = data.field; // 获得表单字段
+      // 执行搜索重载
+      table.reload('test', {
+        page: {
+          curr: 1 // 重新从第 1 页开始
+        },
+        where: field // 搜索的字段
+      });
+      return false; // 阻止默认 form 跳转
     });
   });
 </script>
