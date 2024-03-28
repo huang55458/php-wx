@@ -4,6 +4,7 @@ declare (strict_types = 1);
 namespace app\controller;
 
 use app\cnsts\ERRNO;
+use think\exception\ValidateException;
 use think\Request;
 
 class User
@@ -14,11 +15,20 @@ class User
 
     /**
      * 显示资源列表
-     *
+     * @Validate(\app\validate\User::class)  注解没有效果
+     * @Route("GET","test/index2")
      * @return \think\Response
      */
     public function index(int $page = 1, int $limit = 10, $sortField = '',$sortOrder = '')
     {
+//        try {
+//            validate(\app\validate\User::class)->check([
+//                'telephone' => \request()->param('telephone'),
+//            ]);
+//        } catch (ValidateException $e) {
+//            // 验证失败 输出错误信息
+//            return json(['msg' => $e->getMessage()]);
+//        }
         $where = [];
         !empty(\request()->param('name')) && $where['name'] = trim(\request()->param('name'));
         !empty(\request()->param('telephone')) && $where['telephone'] = trim(\request()->param('telephone'));
