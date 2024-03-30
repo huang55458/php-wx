@@ -11,6 +11,20 @@
   <!-- 引入 layui.js -->
   <script src="/static/js/layui-v2.9.7/layui/layui.js"></script>
   <script src='/static/js/socket.io_1.3.7_socket.io.js'></script>
+
+<!--   es 查询需要的资源-->
+  <link rel="stylesheet" href="/static/css/codemirror/codemirror.min.css">
+  <link rel="stylesheet" href="/static/css/codemirror/foldgutter.min.css">
+  <link rel="stylesheet" href="/static/css/codemirror/tools.min.css">
+  <link rel="stylesheet" href="/static/css/codemirror/theme/dracula.css">
+  <script src="/static/js/codemirror/codemirror.min.js"></script>
+  <script src="/static/js/codemirror/jsonlint.min.js"></script>
+  <script src="/static/js/codemirror/foldjs.min.js"></script>
+  <script src="/static/js/codemirror/clipboard.min.js"></script>
+  <script src="/static/js/codemirror/fullscreen.min.js"></script>
+
+<!--  加密-->
+  <script src='/static/js/crypto-js.min.js'></script>
 </head>
 <body>
 <div class="layui-layout layui-layout-admin">
@@ -62,8 +76,8 @@
         <li class="layui-nav-item layui-nav-itemed">
           <a class="" href="javascript:;">menu group 1</a>
           <dl class="layui-nav-child">
-            <dd><a href_bak="/static/html/xray.html" >menu 1</a></dd>
-            <dd><a href_bak="/static/html/kcptun.html" >menu 2</a></dd>
+            <dd><a href_bak="/static/html/es.html" class="layui-this">es查询</a></dd>
+            <dd><a href_bak="/static/html/test_data_gen.html" >测试数据</a></dd>
             <dd><a href_bak="/static/html/data_show.html">数据展示测试</a></dd>
             <dd><a href="">the links</a></dd>
           </dl>
@@ -81,3 +95,4 @@
       </ul>
     </div>
   </div>
+  <div class="layui-body">

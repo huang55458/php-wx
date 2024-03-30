@@ -1,0 +1,24 @@
+<div style="padding: 15px;">
+    <table class="layui-hide" id="test_data"></table>
+</div>
+<script>
+    layui.use(['table'], function(){
+        const table = layui.table;
+        const form = layui.form;
+
+        // 创建渲染实例
+        table.render({
+            elem: '#test_data',
+            url:'/Tool/testData',
+            height: 'full-200',
+            lineStyle: 'height: 50px;', // 定义表格的多行样式
+            className: 'layui-table-testcss', // 用于给表格主容器追加 css 类名
+            cols: [[
+                {field:'key', width:300, title: '类型', style:'color: #000;'},
+                // 设置单元格样式
+                {field:'value', minWidth:100, edit:true, title: '虚拟数据'},
+            ]]
+        });
+
+    });
+</script>
