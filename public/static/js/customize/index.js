@@ -1,3 +1,4 @@
+window.sessionStorage.layui_show = '_static_html_es';
 layui.use(['element', 'layer', 'util'], function(){
     const element = layui.element
         ,
@@ -48,10 +49,25 @@ layui.use(['element', 'layer', 'util'], function(){
 
     // 监听菜单点击事件
     element.on('nav(side-nav)', function(elem){
-        console.log('start loading')
         let url = elem.attr('href_bak') // 获取菜单链接地址
-        $('.layui-body').load(url);
-        console.log(url)
+        let layui_body = $('.layui-body')
+        let show_id = url.replace('.html','').replace(/\//g,'_')
+        // $('.layui-body').load(url); // 直接变更内容
+
+        if (layui_body.find('#'+show_id).length !== 1) {
+            $.get(url, function (data) {
+                layui_body.append(data);
+                $('#'+window.sessionStorage.layui_show).removeClass('layui-show')
+                $('#'+show_id).addClass('layui-show')
+                window.sessionStorage.layui_show = show_id;
+            });
+        } else {
+            $('#' + window.sessionStorage.layui_show).removeClass('layui-show')
+            $('#' + show_id).addClass('layui-show')
+            window.sessionStorage.layui_show = show_id;
+        }
+
+
     });
 
     $(document).on('click', '#start_test', function(){

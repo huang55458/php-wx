@@ -4,6 +4,8 @@ declare (strict_types = 1);
 namespace app\controller;
 
 use app\cnsts\ERRNO;
+use think\annotation\route\Route;
+use think\annotation\route\Validate;
 use think\exception\ValidateException;
 use think\Request;
 
@@ -19,7 +21,9 @@ class User
      * @Route("GET","test/index2")
      * @return \think\Response
      */
-    public function index(int $page = 1, int $limit = 10, $sortField = '',$sortOrder = '')
+//    #[Validate(\app\validate\User::class)]   这种写法可以，需要先定义路由注解才能用
+//    #[Route('GET','User/index')]
+    public function index(int $page = 1, int $limit = 10, $sortField = '',$sortOrder = ''): \think\Response
     {
 //        try {
 //            validate(\app\validate\User::class)->check([

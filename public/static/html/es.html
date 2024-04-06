@@ -1,6 +1,6 @@
 <!--ln /tp6/app/view/index/index.html /tp6/public/static/html/es.html-->
 <!-- 内容主体区域 -->
-<div style="padding: 15px;">
+<div class="layui-tab-item layui-show" style="padding: 15px;" id="_static_html_es">
     <!--        <pre class="layui-code test"  lay-options="{theme: 'dark'}"></pre>-->
     <!--        <hr class="ws-space-16">-->
     <div class="layui-col-xs5 editor-row">
@@ -105,6 +105,7 @@
                 u.setOption("fullScreen", true)
             },
             'es': function(){
+                textarea.val(u.getValue())
                 $.ajax({
                     url: '/Tool/es',
                     type: 'POST',

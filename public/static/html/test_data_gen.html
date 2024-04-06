@@ -1,10 +1,13 @@
-<div style="padding: 15px;">
+<div class="layui-tab-item"  style="padding: 15px" id="_static_html_test_data_gen">
+    <div class="layui-btn-container">
+        <button type="button" class="layui-btn" id="test_data_gen_refresh">刷新</button>
+    </div>
     <table class="layui-hide" id="test_data"></table>
 </div>
 <script>
     layui.use(['table'], function(){
         const table = layui.table;
-        const form = layui.form;
+        const $ = layui.$;
 
         // 创建渲染实例
         table.render({
@@ -20,5 +23,8 @@
             ]]
         });
 
+        $('#test_data_gen_refresh').click(function () {
+            table.reloadData('test_data', {});
+        })
     });
 </script>
