@@ -23,6 +23,7 @@
         "php": ">=8.0.0",
         "ext-openssl": "*",
         "ext-curl": "*",
+        "ext-pcntl": "*",
         "topthink/framework": "^8.0",
         "topthink/think-orm": "^3.0",
         "topthink/think-filesystem": "^2.0",
