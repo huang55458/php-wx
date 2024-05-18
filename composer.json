@@ -37,7 +37,9 @@
         "rmccue/requests": "^2.0",
         "symfony/console": "^7.0",
         "topthink/think-view": "^2.0",
-        "topthink/think-annotation": "^2.0"
+        "topthink/think-annotation": "^2.0",
+        "orhanerday/open-ai": "^5.1",
+        "elasticsearch/elasticsearch": "^8.13"
     },
     "require-dev": {
         "symfony/var-dumper": ">=4.2",
@@ -56,7 +58,10 @@
         }
     },
     "config": {
-        "preferred-install": "dist"
+        "preferred-install": "dist",
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
     },
     "scripts": {
         "post-autoload-dump": [
