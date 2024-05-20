@@ -3,6 +3,8 @@
 namespace app\controller;
 
 use app\BaseController;
+use app\cnsts\ELASTIC_SEARCH;
+use app\service\SearchService;
 use app\service\ToolService;
 use ReverseRegex\Generator\Scope;
 use ReverseRegex\Lexer;
@@ -1083,9 +1085,19 @@ class Tool extends BaseController
         }
     }
 
-    public function test24(...$f){
-        $nums = array_map(static fn($n) => $n * $factor, [1, 2, 3, 4]);
-
-        dd('over');
+    public function testPlainSearch(){
+        $option = [
+            'index' => 'user',
+            'page_num' => 0,
+            'page_size' => 20,
+            'fields' => ['name', 'password'],
+//            'sort' => ['id' => 'desc'],
+//            'query' => ['name' => 'test'],
+//            'aggregate_size' => 1000,
+//            'aggregates' => ['id'=>[ELASTIC_SEARCH::AGGREGATE_COUNT,'id']],
+//            'distinct' => ['name' => 30],
+        ];
+        $arr = (new SearchService)->plainSearch($option);
+        return json($arr);
     }
 }
