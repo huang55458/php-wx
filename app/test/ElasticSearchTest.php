@@ -117,4 +117,13 @@ class ElasticSearchTest extends TestCase
         $this->assertNotEmpty($response);
         echo $response->asString();
     }
+
+    public function testgetSetting() {
+        $params = [
+            'index' => 'user',
+        ];
+        $response = $this->getClient()->indices()->getMapping($params);
+        $this->assertNotEmpty($response);
+        echo $response->asString();
+    }
 }
