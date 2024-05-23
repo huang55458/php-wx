@@ -6,8 +6,8 @@
 
 return [
     // 默认缓存驱动
-    'default' => 'redis',
-//    'default' => 'file',
+//    'default' => 'redis',
+    'default' => 'file',
     // 缓存连接方式配置
     'stores'  => [
         'file' => [

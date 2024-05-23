@@ -39,7 +39,9 @@
         "topthink/think-view": "^2.0",
         "topthink/think-annotation": "^2.0",
         "orhanerday/open-ai": "^5.1",
-        "elasticsearch/elasticsearch": "^8.13"
+        "elasticsearch/elasticsearch": "^8.13",
+        "monolog/monolog": "^3.6",
+        "intervention/image": "^3.6"
     },
     "require-dev": {
         "symfony/var-dumper": ">=4.2",
