@@ -99,4 +99,20 @@ class ToolTest extends TestCase
         $this->jdump(["交易记录中多的运单号为：",$tmp]);
         $this->assertNotEmpty($tmp);
     }
+
+    public function testPcntl(): void
+    {
+        $i = 1;
+        $pid = pcntl_fork();
+        if ($pid === -1) {
+            die('could not fork');
+        }
+        if ($pid) { // 父进程 ,先执行
+            $i = 3;
+            pcntl_wait($status, []);
+        } else {
+            $i = 2;
+        }
+        $this->assertEquals(2, $i);
+    }
 }

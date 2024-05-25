@@ -27,6 +27,18 @@ class MonologTest extends TestCase
         return shell_exec("tail -n 1 $path");
     }
 
+    public function write($message, $level = 'info', $context = []): void
+    {
+        $this->log->$level($message, $context);
+    }
+
+    public function testWrite(): void
+    {
+        $this->message = 'Adding a new user';
+        $this->write($this->message, 'error');
+        $this->assertStringContainsString($this->message ,$this->getLastContext($this->log_path));
+    }
+
     public function testContext(): void
     {
         $this->message = 'Adding a new user';
