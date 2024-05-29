@@ -26,6 +26,7 @@
         "ext-pcntl": "*",
         "ext-rdkafka": "*",
         "ext-parallel": "*",
+        "ext-fileinfo": "*",
         "topthink/framework": "^8.0",
         "topthink/think-orm": "^3.0",
         "topthink/think-filesystem": "^2.0",

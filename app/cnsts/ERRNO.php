@@ -14,6 +14,7 @@ class ERRNO
     public const MQ_TOPIC_NOT_EXISTS = -103;
     public const EMAIL_SEND_FAILED = -104;
     public const DB_FAIL = -105;
+    public const UPLOAD_FAIL = -105;
 
     public const INDEX_NO_EXIST = -105;
 
@@ -24,6 +25,7 @@ class ERRNO
         self::MQ_TOPIC_NOT_EXISTS => '消息队列不存在',
         self::EMAIL_SEND_FAILED => '邮件发送失败',
         self::DB_FAIL => '数据库操作失败',
+        self::UPLOAD_FAIL => '文件上传失败',
 
         self::INDEX_NO_EXIST => '索引不存在',
     ];

@@ -4,15 +4,20 @@ namespace app\controller;
 
 use app\BaseController;
 use app\cnsts\ELASTIC_SEARCH;
+use app\cnsts\ERRNO;
 use app\service\SearchService;
 use app\service\ToolService;
+use finfo;
 use ReverseRegex\Generator\Scope;
 use ReverseRegex\Lexer;
 use ReverseRegex\Parser;
 use ReverseRegex\Random\MersenneRandom;
+use RuntimeException;
 use think\facade\Db;
 use think\facade\Log;
 use think\helper\Str;
+use think\response\Json;
+use think\response\View;
 use WpOrg\Requests\Requests;
 
 class Tool extends BaseController
@@ -657,6 +662,7 @@ class Tool extends BaseController
             return json('error');
         }
         $option = json_encode($option, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+        $options = ['proxy' => '127.0.0.1:3456'];
         $response = Requests::get($uri.http_build_query(['option' => $option]), [], []);
         return json($response->decode_body());
     }
@@ -1100,4 +1106,49 @@ class Tool extends BaseController
         $arr = (new SearchService)->plainSearch($option);
         return json($arr);
     }
+
+    public function testUpload(): View|Json
+    {
+        try {
+            if (!isset($_FILES['file']['error']) || is_array($_FILES['file']['error'])) {
+                throw new RuntimeException('Invalid parameters.');
+            }
+            switch ($_FILES['file']['error']) {
+                case UPLOAD_ERR_OK:
+                    break;
+                case UPLOAD_ERR_NO_FILE:
+                    throw new RuntimeException('No file sent.');
+                case UPLOAD_ERR_INI_SIZE:
+                case UPLOAD_ERR_FORM_SIZE:
+                    throw new RuntimeException('Exceeded filesize limit.');
+                default:
+                    throw new RuntimeException('Unknown errors.');
+            }
+            if ($_FILES['file']['size'] > 1000000) {
+                throw new RuntimeException('Exceeded filesize limit.');
+            }
+            $finfo = new finfo(FILEINFO_MIME_TYPE);
+            if (false === $ext = array_search(
+                    $finfo->file($_FILES['file']['tmp_name']),
+                    array(
+                        'jpg' => 'image/jpeg',
+                        'png' => 'image/png',
+                        'gif' => 'image/gif',
+                    ),
+                    true
+                )) {
+                throw new RuntimeException('Invalid file format.');
+            }
+
+            if (!move_uploaded_file(
+                $_FILES['file']['tmp_name'],
+                sprintf('/mnt/e/test/tmp/%s.%s', sha1_file($_FILES['file']['tmp_name']), $ext)
+            )) {
+                throw new RuntimeException('Failed to move uploaded file.');
+            }
+
+            return doResponse(ERRNO::SUCCESS ,ERRNO::e(ERRNO::SUCCESS),[]);
+        } catch (RuntimeException $e) {
+            return doResponse(ERRNO::UPLOAD_FAIL ,ERRNO::e($e->getMessage()),[]);
+        }}
 }
