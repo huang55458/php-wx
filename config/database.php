@@ -57,6 +57,15 @@ return [
             // 开启字段缓存
             'fields_cache'    => false,
         ],
+        'local_mongo' => [
+            'type'            => 'mongo',
+            'hostname'        => '127.0.0.1',
+            'database'        => 'test',
+            'username'        => '',
+            'password'        => '',
+            'hostport'        => '27017',
+            'trigger_sql'     => true,
+        ],
 
         // 更多的数据库配置信息
     ],
