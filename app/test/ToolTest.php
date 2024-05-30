@@ -57,4 +57,30 @@ class ToolTest extends TestCase
         }
         $this->assertEquals(2, $i);
     }
+
+    public function testFn(): void
+    {
+        $y = 1;
+        $fn1 = static fn($x) => $x + $y;
+        $this->assertEquals(2, $fn1(1));
+
+        $z = 1;
+        $fn = static fn($x) => static fn($y) => $x * $y + $z;
+        $this->assertEquals(51, $fn(5)(10));
+
+        // 箭头函数会自动绑定上下文变量 不能修改外部作用域的任何值
+        $fn2 = static fn() => ++$y;
+        $this->assertEquals(2, $fn2());
+        $this->assertEquals(1, $y);
+
+        $fn3 = static function () use (&$z) {
+            $z++;
+        };
+        $fn3();
+        $this->assertEquals(2, $z);
+
+        $arr = [1, 2, 3];
+        $arr = array_map(static fn($x) => $x + 2, $arr);
+        $this->assertEquals([3, 4, 5], $arr);
+    }
 }
