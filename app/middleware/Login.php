@@ -23,7 +23,7 @@ class Login
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if ((string)$request->env()['START_LOGIN'] === 'true' && session('USER_ID') === null && !in_array(strtolower($request->server()['PATH_INFO']),['','/index/login'])) {
+        if ((string)$request->env()['START_LOGIN'] === 'true' && session('USER_ID') === null && !in_array(strtolower($request->server()['PATH_INFO']), ['', '/index/login'])) {
             return redirect('/');
         }
         return $next($request);

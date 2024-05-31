@@ -1,13 +1,11 @@
 <?php
-declare (strict_types = 1);
+declare (strict_types=1);
 
 namespace app\controller;
 
 use app\cnsts\ERRNO;
 use think\annotation\route\Route;
 use think\annotation\route\Validate;
-use think\exception\ValidateException;
-use think\Request;
 
 class User
 {
@@ -23,7 +21,7 @@ class User
      */
 //    #[Validate(\app\validate\User::class)]   这种写法可以，需要先定义路由注解才能用
 //    #[Route('GET','User/index')]
-    public function index(int $page = 1, int $limit = 10, $sortField = '',$sortOrder = ''): \think\Response
+    public function index(int $page = 1, int $limit = 10, $sortField = '', $sortOrder = ''): \think\Response
     {
 //        try {
 //            validate(\app\validate\User::class)->check([
@@ -37,11 +35,11 @@ class User
         !empty(\request()->param('name')) && $where['name'] = trim(\request()->param('name'));
         !empty(\request()->param('telephone')) && $where['telephone'] = trim(\request()->param('telephone'));
         if (!empty(\request()->param('create_time'))) {
-            [$start_time,$end_time] = explode(' - ',\request()->param('create_time'));
-            $where[] = ['create_time', 'between', [$start_time,$end_time]];
+            [$start_time, $end_time] = explode(' - ', \request()->param('create_time'));
+            $where[] = ['create_time', 'between', [$start_time, $end_time]];
         }
 
-        $data = \app\model\User::where($where)->order($sortField,$sortOrder)->limit(($page-1)*$limit,$limit)->select();
+        $data = \app\model\User::where($where)->order($sortField, $sortOrder)->limit(($page - 1) * $limit, $limit)->select();
         $count = \app\model\User::where($where)->count();
         $totalRow = [
             'ext' => [
@@ -74,24 +72,24 @@ class User
     /**
      * 保存新建的资源
      *
-     * @param  \think\Request  $request
+     * @param \think\Request $request
      * @return \think\Response
      */
-    public function save(string $data,\app\model\User $user)
+    public function save(string $data, \app\model\User $user)
     {
         $data = json_decode($data, true);
         foreach ($data as $key => $value) {
-            $key === 'password' && $value = password_hash($value,PASSWORD_BCRYPT);
+            $key === 'password' && $value = password_hash($value, PASSWORD_BCRYPT);
             $user->$key = $value;
         }
         $user->save() || $this->errno = ERRNO::DB_FAIL;
-        return doResponse($this->errno,ERRNO::e($this->errno),[]);
+        return doResponse($this->errno, ERRNO::e($this->errno), []);
     }
 
     /**
      * 显示指定的资源
      *
-     * @param  int  $id
+     * @param int $id
      * @return \think\Response
      */
     public function read($id)
@@ -102,7 +100,7 @@ class User
     /**
      * 显示编辑资源表单页.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \think\Response
      */
     public function edit($id)
@@ -113,26 +111,26 @@ class User
     /**
      * 保存更新的资源
      *
-     * @param  \think\Request  $request
-     * @param  int  $id
+     * @param \think\Request $request
+     * @param int $id
      * @return \think\Response
      */
     public function update(string $data = '', int $id = 0)
     {
-        $data = json_decode($data,true);
-        \app\model\User::update($data,['id' => $id]);
-        return doResponse($this->errno,ERRNO::e($this->errno),[]);
+        $data = json_decode($data, true);
+        \app\model\User::update($data, ['id' => $id]);
+        return doResponse($this->errno, ERRNO::e($this->errno), []);
     }
 
     /**
      * 删除指定资源
      *
-     * @param  int  $id
+     * @param int $id
      * @return \think\Response
      */
     public function delete(int $id = 0)
     {
-        \app\model\User::update(['status' => 0],['id' => $id]);
-        return doResponse($this->errno,ERRNO::e($this->errno),[]);
+        \app\model\User::update(['status' => 0], ['id' => $id]);
+        return doResponse($this->errno, ERRNO::e($this->errno), []);
     }
 }

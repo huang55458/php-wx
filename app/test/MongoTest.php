@@ -1,4 +1,5 @@
 <?php
+
 namespace app\test;
 require __DIR__ . '/../../vendor/autoload.php';
 
@@ -33,7 +34,7 @@ class MongoTest extends TestCase
         $data['name'] = '小黑f';
         $res = Db::connect('local_mongo')->table('user')->save($data);
         $this->assertEquals(1, $res); // 未更新返回0
-        $res =Db::connect('local_mongo')->table('user')->save(['name' => '小绿', 'age' => '22']);
+        $res = Db::connect('local_mongo')->table('user')->save(['name' => '小绿', 'age' => '22']);
         $this->assertEquals(1, $res);
     }
 
@@ -50,13 +51,13 @@ class MongoTest extends TestCase
 
     public function testUpdate(): void
     {
-        $res =Db::connect('local_mongo')->table('user')->where('sex', 'x')->update(['name' => '小粉', 'age' => '24']);
+        $res = Db::connect('local_mongo')->table('user')->where('sex', 'x')->update(['name' => '小粉', 'age' => '24']);
         $this->assert(1, $res); // 返回更新数量
     }
 
     public function testDelete(): void
     {
-        $res =Db::connect('local_mongo')->table('user')->where('sex', 'x')->delete();
+        $res = Db::connect('local_mongo')->table('user')->where('sex', 'x')->delete();
         $this->assert(1, $res); // 返回更新数量
     }
 }

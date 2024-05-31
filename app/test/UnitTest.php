@@ -3,7 +3,6 @@
 namespace app\test;
 
 use PHPUnit\Framework\TestCase;
-use ReverseRegex\Exception;
 use ReverseRegex\Generator\Scope;
 use ReverseRegex\Lexer;
 use ReverseRegex\Parser;
@@ -21,14 +20,14 @@ class UnitTest extends TestCase
 
     public function test1(): void
     {
-        $this->jdd([1,23]);
+        $this->jdd([1, 23]);
         $stack = [];
         $this->assertCount(0, $stack);
     }
 
     public function test2(): void
     {
-        $this->jdd([1,23]);
+        $this->jdd([1, 23]);
         $stack = [];
         $this->assertCount(0, $stack);
     }
@@ -41,20 +40,20 @@ class UnitTest extends TestCase
 
     public function testReverseRegexp(): void
     {
-        $lexer     = new Lexer('[\X{00FF}-\X{00FF}]');
-        $parser    = new Parser($lexer,new Scope(),new Scope());
+        $lexer = new Lexer('[\X{00FF}-\X{00FF}]');
+        $parser = new Parser($lexer, new Scope(), new Scope());
 
         $generator = $parser->parse()->getResult();
 
 
         $random = new MersenneRandom(random_int(PHP_INT_MIN, PHP_INT_MAX));
 
-        for($i = 20; $i > 0; $i--) {
+        for ($i = 20; $i > 0; $i--) {
             $result = '';
-            $generator->generate($result,$random);
+            $generator->generate($result, $random);
 
-            echo $result.PHP_EOL;
-            $this->assertMatchesRegularExpression("/^(?:[\u4e00-\u9fa5·]{2,16})$/",$result);
+            echo $result . PHP_EOL;
+            $this->assertMatchesRegularExpression("/^(?:[\u4e00-\u9fa5·]{2,16})$/", $result);
         }
     }
 }

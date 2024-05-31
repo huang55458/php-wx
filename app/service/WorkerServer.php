@@ -7,7 +7,6 @@ namespace app\service;
 use think\facade\Log;
 use think\helper\Str;
 use think\worker\Server;
-use Workerman\Lib\Timer;
 use Workerman\Worker;
 
 class WorkerServer extends Server
@@ -17,7 +16,7 @@ class WorkerServer extends Server
 
     public function onWorkerStart($worker)
     {
-        Log::write('onWorkerStart : '.$worker->getSocketName());
+        Log::write('onWorkerStart : ' . $worker->getSocketName());
         //        bind('worker', $worker); 运行在不同进程中，无法绑定进tp进程
 
         // 每20秒给所有人发条消息
@@ -61,7 +60,7 @@ class WorkerServer extends Server
 
     public function onConnect($connection)
     {
-        $connection->send('你好，'.spl_object_hash($connection));
+        $connection->send('你好，' . spl_object_hash($connection));
     }
 
     public function onMessage($connection, $data)

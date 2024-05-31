@@ -189,13 +189,13 @@ class KafkaTest extends TestCase
         try {
             $consumer->subscribe(['user']);
         } catch (Exception $e) {
-            $this->log->write($e->getMessage(), 'error', [$e->getFile(),$e->getLine()]);
+            $this->log->write($e->getMessage(), 'error', [$e->getFile(), $e->getLine()]);
         }
         while (true) {
             try {
                 $message = $consumer->consume(120 * 1000);
             } catch (Exception $e) {
-                $this->log->write($e->getMessage(), 'error', [$e->getFile(),$e->getLine()]);
+                $this->log->write($e->getMessage(), 'error', [$e->getFile(), $e->getLine()]);
             }
             switch ($message->err) {
                 case RD_KAFKA_RESP_ERR_NO_ERROR:

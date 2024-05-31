@@ -5,11 +5,11 @@ declare (strict_types=1);
 namespace app\controller;
 
 use app\BaseController;
+use app\cnsts\WeChat as WX_Cnsts;
 use app\service\WeChatService;
+use Gaoming13\WechatPhpSdk\Api;
 use Gaoming13\WechatPhpSdk\Utils\FileCache;
 use Gaoming13\WechatPhpSdk\Wechat as WX;
-use app\cnsts\WeChat as WX_Cnsts;
-use Gaoming13\WechatPhpSdk\Api;
 use think\App;
 use think\facade\Log;
 use think\Response;
@@ -47,6 +47,7 @@ class WeChat extends BaseController
             },
         ]);
     }
+
     /**
      * 显示资源列表
      *
@@ -135,7 +136,7 @@ class WeChat extends BaseController
     /**
      * 显示编辑资源表单页.
      *
-     * @param  string  $media_id
+     * @param string $media_id
      * @return Response
      */
     public function edit(string $media_id)

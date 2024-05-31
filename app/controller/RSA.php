@@ -5,7 +5,6 @@ declare (strict_types=1);
 namespace app\controller;
 
 use think\facade\Log;
-use think\Request;
 
 /**
  * RSA加密对明文的长度有所限制，规定需加密的明文最大长度=密钥长度-11（单位是字节，即byte），所以在加密和解密的过程中需要分块进行。
@@ -18,7 +17,7 @@ class RSA
 
     public function __construct()
     {
-        $this->rsa = new \app\service\RSA(runtime_path().'certs');
+        $this->rsa = new \app\service\RSA(runtime_path() . 'certs');
     }
 
     /**
@@ -39,28 +38,28 @@ class RSA
         openssl_pkey_export($res, $private_key, null, $config);
         //生成公钥
         $public_key = openssl_pkey_get_details($res)["key"];
-        $resp['私钥'] =  $private_key;
-        $resp['公钥'] =  $public_key ;
+        $resp['私钥'] = $private_key;
+        $resp['公钥'] = $public_key;
 
         //要加密的数据
         $data = "http://www.cnblogs.com/wt645631686/";
-        $resp['加密的数据：'] =  $data ;
+        $resp['加密的数据：'] = $data;
         //私钥加密后的数据
         openssl_private_encrypt($data, $encrypted, $private_key);
         //加密后的内容通常含有特殊字符，需要base64编码转换下
         $encrypted = base64_encode($encrypted);
-        $resp['私钥加密后的数据：'] =  $encrypted ;
+        $resp['私钥加密后的数据：'] = $encrypted;
         //公钥解密
         openssl_public_decrypt(base64_decode($encrypted), $decrypted, $public_key);
-        $resp['公钥解密后的数据：'] =  $decrypted ;
+        $resp['公钥解密后的数据：'] = $decrypted;
 
         //----相反操作。公钥加密
         openssl_public_encrypt($data, $encrypted, $public_key);
         $encrypted = base64_encode($encrypted);
-        $resp['公钥加密后的数据：'] =  $encrypted ;
+        $resp['公钥加密后的数据：'] = $encrypted;
 
         openssl_private_decrypt(base64_decode($encrypted), $decrypted, $private_key);//私钥解密
-        $resp['私钥解密后的数据：'] =  $decrypted ;
+        $resp['私钥解密后的数据：'] = $decrypted;
         return json($resp);
     }
 
@@ -86,18 +85,18 @@ class RSA
     public function test3()
     {
         $data = 'test';
-        $public_key = file_get_contents(runtime_path().'certs'.DIRECTORY_SEPARATOR.'_public.key');
-        $private_key = file_get_contents(runtime_path().'certs'.DIRECTORY_SEPARATOR.'_private.key');
+        $public_key = file_get_contents(runtime_path() . 'certs' . DIRECTORY_SEPARATOR . '_public.key');
+        $private_key = file_get_contents(runtime_path() . 'certs' . DIRECTORY_SEPARATOR . '_private.key');
         openssl_public_encrypt($data, $encrypted, $public_key);
-        Log::info('test 公钥加密后的数据(base64_encode)：'.base64_encode($encrypted));
+        Log::info('test 公钥加密后的数据(base64_encode)：' . base64_encode($encrypted));
         openssl_private_decrypt($encrypted, $decrypted, openssl_pkey_get_private($private_key, $this->rsa->getPassPhrase()));
-        Log::info('用私钥解密：'.$decrypted);
+        Log::info('用私钥解密：' . $decrypted);
         openssl_public_decrypt($encrypted, $decrypted2, $public_key);
-        Log::info('用公钥解密：'.$decrypted2);
+        Log::info('用公钥解密：' . $decrypted2);
         openssl_sign($encrypted, $sign, openssl_pkey_get_private($private_key, $this->rsa->getPassPhrase()));
-        Log::info('用私钥签名：'.base64_encode($sign));
+        Log::info('用私钥签名：' . base64_encode($sign));
         $verify = openssl_verify($encrypted, $sign, $public_key);
-        Log::info('验签结果：'.$verify);//成功1，失败0
+        Log::info('验签结果：' . $verify);//成功1，失败0
     }
 
     /**
@@ -109,22 +108,22 @@ class RSA
     public function test4()
     {
         $data = 'test';
-        $public_key = file_get_contents(runtime_path().'certs'.DIRECTORY_SEPARATOR.'_cert.cer');
+        $public_key = file_get_contents(runtime_path() . 'certs' . DIRECTORY_SEPARATOR . '_cert.cer');
         $public_key = openssl_pkey_get_public($public_key);
-        $private_key = file_get_contents(runtime_path().'certs'.DIRECTORY_SEPARATOR.'_private.pfx');
+        $private_key = file_get_contents(runtime_path() . 'certs' . DIRECTORY_SEPARATOR . '_private.pfx');
         $priKeys = [];
         openssl_pkcs12_read($private_key, $priKeys, $this->rsa->getPassPhrase());
         $priKey = openssl_pkey_get_private($priKeys['pkey']);
         openssl_public_encrypt($data, $encrypted, $public_key);
-        Log::info('test 公钥加密后的数据(base64_encode)：'.base64_encode($encrypted));
+        Log::info('test 公钥加密后的数据(base64_encode)：' . base64_encode($encrypted));
         openssl_private_decrypt($encrypted, $decrypted, $priKey);
-        Log::info('用私钥解密：'.$decrypted);
+        Log::info('用私钥解密：' . $decrypted);
         openssl_public_decrypt($encrypted, $decrypted2, $public_key);
-        Log::info('用公钥解密：'.$decrypted2);
+        Log::info('用公钥解密：' . $decrypted2);
         openssl_sign($encrypted, $sign, $priKey);
-        Log::info('用私钥签名：'.base64_encode($sign));
+        Log::info('用私钥签名：' . base64_encode($sign));
         $verify = openssl_verify($encrypted, $sign, $public_key);
-        Log::info('验签结果：'.$verify);
+        Log::info('验签结果：' . $verify);
     }
 
     /**
@@ -136,15 +135,15 @@ class RSA
     {
         $str = 'test';
         $pass = '12345';
-        $iv = openssl_random_pseudo_bytes(16, $crypto_strong) ;
-        Log::info('$iv：'.$iv);
+        $iv = openssl_random_pseudo_bytes(16, $crypto_strong);
+        Log::info('$iv：' . $iv);
         if ($iv === false || $crypto_strong === false) {
-            return ;
+            return;
         }
         $encrypt = base64_encode(openssl_encrypt($str, 'AES-256-CBC', $pass, OPENSSL_RAW_DATA, $iv));
-        Log::info('加密结果：'.$encrypt);
+        Log::info('加密结果：' . $encrypt);
 
         $decrypt = openssl_decrypt(base64_decode($encrypt), 'AES-256-CBC', $pass, OPENSSL_RAW_DATA, $iv);
-        Log::info('解密结果：'.$decrypt);
+        Log::info('解密结果：' . $decrypt);
     }
 }

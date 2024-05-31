@@ -8,26 +8,26 @@ class ELASTIC_SEARCH
     public const EXIST_FIELD = '_EXIST_FIELD_';
 
     public const JOIN_MAX_PARENT = 1;
-    public const JOIN_MAX_CHILD  = 1000;
+    public const JOIN_MAX_CHILD = 1000;
 
     public const LOGIC_MAP = [
-        'AND'      => 'must',
-        'NOT'      => 'must_not',
-        'OR'       => 'should',
-        'must'     => 'must',
+        'AND' => 'must',
+        'NOT' => 'must_not',
+        'OR' => 'should',
+        'must' => 'must',
         'must_not' => 'must_not',
-        'should'   => 'should',
+        'should' => 'should',
     ];
 
     public const RANGE_OPERATOR_MAP = [
-        '>='  => 'gte',
-        '<='  => 'lte',
-        '>'   => 'gt',
-        '<'   => 'lt',
+        '>=' => 'gte',
+        '<=' => 'lte',
+        '>' => 'gt',
+        '<' => 'lt',
         'gte' => 'gte',
         'lte' => 'lte',
-        'gt'  => 'gt',
-        'lt'  => 'lt',
+        'gt' => 'gt',
+        'lt' => 'lt',
     ];
 
     public const NUMERIC_TYPE = [
@@ -65,7 +65,7 @@ class ELASTIC_SEARCH
     public const TYPE_TEXT = 'text';
     public const TYPE_DATE = 'date';
     public const TYPE_DATE_YMD = 'date_ymd';
-    public const TYPE_DATE_YM  = 'date_ym';
+    public const TYPE_DATE_YM = 'date_ym';
     public const TYPE_BOOLEAN = 'boolean';
     public const TYPE_OBJECT = 'object';
     public const TYPE_NESTED = 'nested';
@@ -108,10 +108,10 @@ class ELASTIC_SEARCH
 
     public const EXACT_FIND_SUFFIX = '_exact_';
     public const SORT_OPERATOR_MAP = [
-        '-'    => 'desc',
-        '+'    => 'asc',
+        '-' => 'desc',
+        '+' => 'asc',
         'desc' => 'desc',
-        'asc'  => 'asc',
+        'asc' => 'asc',
     ];
 
     public const INDEX_SETTINGS = [

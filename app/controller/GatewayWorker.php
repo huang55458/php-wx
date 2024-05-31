@@ -11,16 +11,16 @@ use think\Response;
 
 /**
  * 1、网站页面建立与GatewayWorker的websocket连接
-
-2、GatewayWorker发现有页面发起连接时，将对应连接的client_id发给网站页面
-
-3、网站页面收到client_id后触发一个ajax请求(假设是bind.php)将client_id发到mvc后端
-
-4、mvc后端bind.php收到client_id后利用GatewayClient调用Gateway::bindUid($client_id, $uid)将client_id与当前uid(用户id或者客户端唯一标识)绑定。如果有群组、群发功能，也可以利用Gateway::joinGroup($client_id, $group_id)将client_id加入到对应分组
-
-5、页面发起的所有请求都直接post/get到mvc框架统一处理，包括发送消息
-
-6、mvc框架处理业务过程中需要向某个uid或者某个群组发送数据时，直接调用GatewayClient的接口Gateway::sendToUid Gateway::sendToGroup 等发送即可
+ *
+ * 2、GatewayWorker发现有页面发起连接时，将对应连接的client_id发给网站页面
+ *
+ * 3、网站页面收到client_id后触发一个ajax请求(假设是bind.php)将client_id发到mvc后端
+ *
+ * 4、mvc后端bind.php收到client_id后利用GatewayClient调用Gateway::bindUid($client_id, $uid)将client_id与当前uid(用户id或者客户端唯一标识)绑定。如果有群组、群发功能，也可以利用Gateway::joinGroup($client_id, $group_id)将client_id加入到对应分组
+ *
+ * 5、页面发起的所有请求都直接post/get到mvc框架统一处理，包括发送消息
+ *
+ * 6、mvc框架处理业务过程中需要向某个uid或者某个群组发送数据时，直接调用GatewayClient的接口Gateway::sendToUid Gateway::sendToGroup 等发送即可
  */
 class GatewayWorker
 {
@@ -78,7 +78,7 @@ class GatewayWorker
     /**
      * 显示编辑资源表单页.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \think\Response
      */
     public function edit($id)
@@ -89,8 +89,8 @@ class GatewayWorker
     /**
      * 保存更新的资源
      *
-     * @param  \think\Request  $request
-     * @param  int  $id
+     * @param \think\Request $request
+     * @param int $id
      * @return \think\Response
      */
     public function update(Request $request, $id)
@@ -101,7 +101,7 @@ class GatewayWorker
     /**
      * 删除指定资源
      *
-     * @param  int  $id
+     * @param int $id
      * @return \think\Response
      */
     public function delete($id)

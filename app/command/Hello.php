@@ -5,7 +5,6 @@ namespace app\command;
 use app\utils\SendEmail;
 use think\console\Command;
 use think\console\Input;
-use think\console\input\Argument;
 use think\console\input\Option;
 use think\console\Output;
 
@@ -25,7 +24,7 @@ class Hello extends Command
 
         if ($input->hasOption('send-email')) {
             //            $body = $input->getOption('send-email');
-            (new SendEmail()) -> run();
+            (new SendEmail())->run();
         }
 
         $output->writeln("success");

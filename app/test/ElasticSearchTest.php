@@ -5,7 +5,6 @@ namespace app\test;
 use app\cnsts\ELASTIC_SEARCH;
 use Elastic\Elasticsearch\ClientBuilder;
 use PHPUnit\Framework\TestCase;
-use think\facade\Db;
 
 class ElasticSearchTest extends TestCase
 {
@@ -22,18 +21,20 @@ class ElasticSearchTest extends TestCase
     {
         $client = ClientBuilder::create()
 //            ->setHosts(env('ELASTIC_SEARCH_HOST'))
-            ->setBasicAuthentication('elastic','aQHaRYPfidp*-AxzL9IY')
+            ->setBasicAuthentication('elastic', 'aQHaRYPfidp*-AxzL9IY')
             ->setRetries(1)
             ->build();
         return $client;
     }
 
-    public function testcreateIndex() {
+    public function testcreateIndex()
+    {
         $response = $this->getClient()->indices()->create(ELASTIC_SEARCH::getMapping($this->index_name));
         $this->assertNotEmpty($response);
     }
 
-    public function testdeleteIndex() {
+    public function testdeleteIndex()
+    {
         $response = $this->getClient()->indices()->delete(['index' => $this->index_name]);
         $this->assertNotEmpty($response);
     }
@@ -64,20 +65,22 @@ class ElasticSearchTest extends TestCase
         $this->assertNotEmpty($response);
     }
 
-    public function testget() {
+    public function testget()
+    {
         $params = [
             'index' => 'user',
-            'id'    => '1009'
+            'id' => '1009'
         ];
         $response = $this->getClient()->get($params);
         $this->assertNotEmpty($response);
         echo $response->asString();
     }
 
-    public function testsearch() {
+    public function testsearch()
+    {
         $params = [
             'index' => 'user',
-            'body'  => [
+            'body' => [
                 'query' => [
                     'match' => [
                         'telephone' => '17618717324'
@@ -91,11 +94,12 @@ class ElasticSearchTest extends TestCase
         echo $results->asString();
     }
 
-    public function testupdate() {
+    public function testupdate()
+    {
         $params = [
             'index' => 'user',
-            'id'    => '1008',
-            'body'  => [
+            'id' => '1008',
+            'body' => [
                 'doc' => [
                     'name' => '哈哈哈'
                 ]
@@ -107,10 +111,11 @@ class ElasticSearchTest extends TestCase
         echo $response->asString();
     }
 
-    public function testdelete() {
+    public function testdelete()
+    {
         $params = [
             'index' => 'user',
-            'id'    => '1009'
+            'id' => '1009'
         ];
 
         $response = $this->getClient()->delete($params);
@@ -118,7 +123,8 @@ class ElasticSearchTest extends TestCase
         echo $response->asString();
     }
 
-    public function testgetSetting() {
+    public function testgetSetting()
+    {
         $params = [
             'index' => 'user',
         ];

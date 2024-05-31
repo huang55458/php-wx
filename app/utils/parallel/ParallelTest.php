@@ -3,9 +3,6 @@
 namespace app\utils\parallel;
 
 use parallel\Channel;
-use parallel\Events;
-use parallel\Events\Error\Timeout;
-use parallel\Events\Event\Type;
 use parallel\Runtime;
 
 
@@ -35,7 +32,7 @@ class ParallelTest
             $this->futures[] = $run->run(static function (Channel $channel, array $item) {
                 foreach ($item as $v) {
                     sleep(1);
-                    echo $v. '已处理'. PHP_EOL;
+                    echo $v . '已处理' . PHP_EOL;
                 }
             }, [$this->channel, $data[$k]]);
         }

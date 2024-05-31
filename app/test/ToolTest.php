@@ -4,8 +4,6 @@ namespace app\test;
 
 use DirectoryIterator;
 use PHPUnit\Framework\TestCase;
-use WpOrg\Requests\Exception;
-use WpOrg\Requests\Requests;
 
 class ToolTest extends TestCase
 {
@@ -28,7 +26,7 @@ class ToolTest extends TestCase
         // 大写字母输出、ROT13 加密
         readfile("php://filter/read=string.toupper|string.rot13/resource=http://localhost:306");
         // base64编码数据写入example.txt文件
-        file_put_contents("php://filter/write=convert.base64-encode/resource=example.txt","Hello World");
+        file_put_contents("php://filter/write=convert.base64-encode/resource=example.txt", "Hello World");
     }
 
     public function testOtherStream(): void
@@ -37,8 +35,8 @@ class ToolTest extends TestCase
 
         // 打印当前目录下的所有php文件名和文件大小
         $it = new DirectoryIterator("glob://*.php");
-        foreach($it as $f) {
-            printf("%s: %.1FK\n", $f->getFilename(), $f->getSize()/1024);
+        foreach ($it as $f) {
+            printf("%s: %.1FK\n", $f->getFilename(), $f->getSize() / 1024);
         }
     }
 
@@ -82,5 +80,29 @@ class ToolTest extends TestCase
         $arr = [1, 2, 3];
         $arr = array_map(static fn($x) => $x + 2, $arr);
         $this->assertEquals([3, 4, 5], $arr);
+    }
+
+    public function testYield(): void
+    {
+        file_put_contents(sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'tmp.txt', "2\n5\n8");
+        $file_handle = fopen(sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'tmp.txt', 'rb');
+        function get_all_lines($file_handle): \Generator
+        {
+            while (!feof($file_handle)) {
+                yield fgets($file_handle);
+            }
+        }
+
+        $flag = true;
+        $data = array();
+        foreach (get_all_lines($file_handle) as $line) {
+            if ($flag) {
+                $flag = false;
+                continue;
+            }
+            $data[] = $line;
+        }
+        $this->assertEquals(13, array_sum($data));
+        fclose($file_handle);
     }
 }

@@ -5,7 +5,6 @@ declare (strict_types=1);
 namespace app\controller;
 
 use think\facade\Log;
-use think\Request;
 
 /**
  * 生成器函数测试
@@ -46,7 +45,7 @@ class Generator
     public function create()
     {
         //        str_contains();
-        $result = match(1) {
+        $result = match (1) {
             1, 2 => [],
             3 => "three",
             default => "unknown",

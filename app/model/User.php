@@ -19,12 +19,12 @@ class User extends Model
 
     public function scopeStatus($query)
     {
-        $query->where('status',1);
+        $query->where('status', 1);
     }
 
     public function getIsAdminAttr($value)
     {
-        $status = [1=>'是',0=>'否'];
+        $status = [1 => '是', 0 => '否'];
         return $status[$value];
     }
 //    public function setIsAdminAttr($value)

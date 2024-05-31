@@ -4,8 +4,6 @@ declare (strict_types=1);
 
 namespace app\service;
 
-use think\facade\Log;
-
 class RSA extends \think\Service
 {
     /**
@@ -89,8 +87,8 @@ class RSA extends \think\Service
 
         //var_dump($this->private_key);
         //var_dump($pubKey);
-        file_put_contents(($this->path) .DIRECTORY_SEPARATOR."{$this->time}_private.key", $this->private_key);
-        file_put_contents(($this->path) .DIRECTORY_SEPARATOR."{$this->time}_public.key", $pubKey["key"]);
+        file_put_contents(($this->path) . DIRECTORY_SEPARATOR . "{$this->time}_private.key", $this->private_key);
+        file_put_contents(($this->path) . DIRECTORY_SEPARATOR . "{$this->time}_public.key", $pubKey["key"]);
     }
 
     /**
@@ -110,8 +108,8 @@ class RSA extends \think\Service
         //var_dump($csr_key);
         //var_dump($private_pkcs12);
 
-        file_put_contents(($this->path) .DIRECTORY_SEPARATOR."{$this->time}_cert.cer", $csr_key);
-        file_put_contents(($this->path) .DIRECTORY_SEPARATOR."{$this->time}_private.pfx", $private_pkcs12);
+        file_put_contents(($this->path) . DIRECTORY_SEPARATOR . "{$this->time}_cert.cer", $csr_key);
+        file_put_contents(($this->path) . DIRECTORY_SEPARATOR . "{$this->time}_private.pfx", $private_pkcs12);
     }
 
     /**

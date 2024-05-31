@@ -15,6 +15,7 @@ class MonologTest extends TestCase
     private Logger $log;
     private string $log_path = 'E:/test/tmp/test.log';
     private string $message;
+
     public function __construct(string $name)
     {
         parent::__construct($name);
@@ -36,17 +37,17 @@ class MonologTest extends TestCase
     {
         $this->message = 'Adding a new user';
         $this->write($this->message, 'error');
-        $this->assertStringContainsString($this->message ,$this->getLastContext($this->log_path));
+        $this->assertStringContainsString($this->message, $this->getLastContext($this->log_path));
     }
 
     public function testContext(): void
     {
         $this->message = 'Adding a new user';
         $this->log->info($this->message, ['username' => 'Seldaek']);
-        $this->assertStringContainsString($this->message ,$this->getLastContext($this->log_path));
+        $this->assertStringContainsString($this->message, $this->getLastContext($this->log_path));
         $this->message = 'Adding a new user';
         $this->log->warning($this->message);
-        $this->assertStringContainsString($this->message ,$this->getLastContext($this->log_path));
+        $this->assertStringContainsString($this->message, $this->getLastContext($this->log_path));
     }
 
     public function testProcessor(): void
@@ -57,7 +58,7 @@ class MonologTest extends TestCase
             return $record;
         });
         $this->log->info($this->message, ['username' => 'Seldaek']);
-        $this->assertStringContainsString($this->message ,$this->getLastContext($this->log_path));
+        $this->assertStringContainsString($this->message, $this->getLastContext($this->log_path));
     }
 
     public function testChannel(): void
@@ -70,13 +71,13 @@ class MonologTest extends TestCase
         $logger->pushHandler($stream);
         $logger->pushHandler($firephp);
         $logger->info($this->message);
-        $this->assertStringContainsString($this->message ,$this->getLastContext($this->log_path));
+        $this->assertStringContainsString($this->message, $this->getLastContext($this->log_path));
 
         $securityLogger = new Logger('security');
         $securityLogger->pushHandler($stream);
         $securityLogger->pushHandler($firephp);
         $securityLogger->info($this->message);
-        $this->assertStringContainsString($this->message ,$this->getLastContext($this->log_path));
+        $this->assertStringContainsString($this->message, $this->getLastContext($this->log_path));
     }
 
     public function testFormat(): void
@@ -95,6 +96,6 @@ class MonologTest extends TestCase
         $securityLogger = new Logger('security');
         $securityLogger->pushHandler($stream);
         $securityLogger->info($this->message, $context);
-        $this->assertStringContainsString($this->message ,$this->getLastContext($this->log_path));
+        $this->assertStringContainsString($this->message, $this->getLastContext($this->log_path));
     }
 }

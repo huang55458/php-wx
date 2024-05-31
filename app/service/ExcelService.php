@@ -17,7 +17,8 @@ use think\Collection;
 class ExcelService extends \think\Service
 {
     // 26列，一般够用
-    private array $column = [1 => 'A', 2 => 'B', 3 => 'C', 4 => 'D',5 => 'E', 6 => 'F', 7 => 'G', 8 => 'H', 9 => 'I', 10 => 'J', 11 => 'K', 12 => 'L', 13 => 'M', 14 => 'N', 15 => 'O', 16 => 'P', 17 => 'Q', 18 => 'R', 19 => 'S', 20 => 'T', 21 => 'U', 22 => 'V', 23 => 'W', 24 => 'X', 25 => 'Y', 26 => 'Z'];
+    private array $column = [1 => 'A', 2 => 'B', 3 => 'C', 4 => 'D', 5 => 'E', 6 => 'F', 7 => 'G', 8 => 'H', 9 => 'I', 10 => 'J', 11 => 'K', 12 => 'L', 13 => 'M', 14 => 'N', 15 => 'O', 16 => 'P', 17 => 'Q', 18 => 'R', 19 => 'S', 20 => 'T', 21 => 'U', 22 => 'V', 23 => 'W', 24 => 'X', 25 => 'Y', 26 => 'Z'];
+
     /**
      * 注册服务
      *
@@ -187,7 +188,6 @@ class ExcelService extends \think\Service
         // 将A7至B7两单元格设置为粗体字，Arial字体，10号字
         $spreadsheet->getActiveSheet()->getStyle('A7:B7')->getFont()->setBold(true)->setName('Arial')->setSize(10);
 
-
         // 将文字颜色设置为红色。
         $spreadsheet->getActiveSheet()->getStyle('A4')->getFont()->getColor()->setARGB(Color::COLOR_RED);
 
@@ -197,7 +197,6 @@ class ExcelService extends \think\Service
         $drawing->setDescription('Logo');
         $drawing->setPath('./images/officelogo.jpg');
         $drawing->setHeight(36);
-
 
         //设置第10行行高为100pt
         $spreadsheet->getActiveSheet()->getRowDimension(10)->setRowHeight(100);
@@ -256,7 +255,6 @@ class ExcelService extends \think\Service
             ->setDescription("Test document for Office 2007 XLSX, generated using PHP classes.") //描述
             ->setKeywords("office 2007 openxml php") //关键字
             ->setCategory("Test result file"); //分类
-
 
         // 导入
         $spreadsheet = IOFactory::load('tmp.xlsx');
