@@ -103,9 +103,9 @@ class ToolService extends \think\Service
         $req = json_decode($data['req'], true);
         $page_size = $req['page_size'];
         $response = Requests::post($uri, $headers, $data, []);
-        $data = $response->decode_body();
+        $res_data = $response->decode_body();
 
-        foreach ($data['res']['data'] as $v) {
+        foreach ($res_data['res']['data'] as $v) {
             if (!isset($v['Accounts|doc_date'])) {
                 dump($v['settle_no'] . ' 不存在凭证日期');
                 Log::write($v['settle_no'] . ' 不存在凭证日期');
@@ -116,7 +116,7 @@ class ToolService extends \think\Service
                 Log::write($v['settle_no'] . '凭证日期存在问题');
             }
         }
-        $count = $data['res']['total']['count'];
+        $count = $res_data['res']['total']['count'];
         if ($count > 50000) {
             jdd('超过50000条，添加一些查询参数');
         }
@@ -126,8 +126,8 @@ class ToolService extends \think\Service
                 $req['page_num']++;
                 $data['req'] = json_encode($req, JSON_UNESCAPED_UNICODE);
                 $response = Requests::post($uri, $headers, $data, []);
-                $data = $response->decode_body();
-                foreach ($data['res']['data'] as $v) {
+                $res_data = $response->decode_body();
+                foreach ($res_data['res']['data'] as $v) {
                     if (!isset($v['Accounts|doc_date'])) {
                         dump($v['settle_no'] . ' 不存在凭证日期');
                         Log::write($v['settle_no'] . ' 不存在凭证日期');
