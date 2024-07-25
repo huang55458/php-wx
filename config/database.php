@@ -76,6 +76,38 @@ return [
             'hostport' => '30000',
             'trigger_sql' => true,
         ],
+        'pro_log' => [
+            'type' => 'mysql',
+            'hostname' => env('PRO_LOG_HOST'),
+            'database' => env('PRO_LOG_DATABASE'),
+            'username' => env('PRO_LOG_USER'),
+            'password' => env('PRO_LOG_PASS'),
+            'hostport' => '3306',
+        ],
+        'pro_order' => [
+            'type' => 'mysql',
+            'hostname' => env('PRO_ORDER_HOST'),
+            'database' => env('PRO_ORDER_DATABASE'),
+            'username' => env('PRO_ORDER_USER'),
+            'password' => env('PRO_ORDER_PASS'),
+            'hostport' => '3306',
+        ],
+        'pro_finance' => [
+            'type' => 'mysql',
+            'hostname' => env('PRO_FINANCE_HOST'),
+            'database' => env('PRO_FINANCE_DATABASE'),
+            'username' => env('PRO_FINANCE_USER'),
+            'password' => env('PRO_FINANCE_PASS'),
+            'hostport' => '3306',
+        ],
+        'pro_main' => [
+            'type' => 'mysql',
+            'hostname' => env('PRO_MAIN_HOST'),
+            'database' => env('PRO_MAIN_DATABASE'),
+            'username' => env('PRO_MAIN_USER'),
+            'password' => env('PRO_MAIN_PASS'),
+            'hostport' => '3306',
+        ],
         // 更多的数据库配置信息
     ],
 ];

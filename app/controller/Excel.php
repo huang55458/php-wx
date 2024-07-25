@@ -27,7 +27,13 @@ class Excel extends BaseController
 
     public function testLoad()
     {
-        $res = $this->excelService->loadXlsx('/mnt/d/download/01simple (6).xlsx');
+        $t = [];
+        $res = $this->excelService->loadXlsx('/mnt/c/Users/Administrator/Documents/业务账套1000系统不经到货到付挂账科目不对问题.xlsx');
+        array_pop($res);
+        foreach ($res as $key => $value) {
+            $t[$value['网点']][] = $value['运单号'];
+        }
+        file_put_contents(runtime_path() . DIRECTORY_SEPARATOR . 'tmp.txt', json_encode($t));
         return json($res);
     }
 

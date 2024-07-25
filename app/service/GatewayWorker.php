@@ -5,6 +5,7 @@ declare (strict_types=1);
 namespace app\service;
 
 use GatewayWorker\Lib\Gateway;
+use think\worker\Application;
 use Workerman\Worker;
 
 /**

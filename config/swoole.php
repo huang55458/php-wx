@@ -4,7 +4,7 @@ return [
     'http'       => [
         'enable'     => true,
         'host'       => '0.0.0.0',
-        'port'       => 8080,
+        'port'       => 45200,
         'worker_num' => swoole_cpu_num(),
         'options'    => [],
     ],
@@ -33,7 +33,7 @@ return [
     ],
     'rpc'        => [
         'server' => [
-            'enable'     => true,
+            'enable'     => false,
             'host'       => '0.0.0.0',
             'port'       => 9000,
             'worker_num' => swoole_cpu_num(),

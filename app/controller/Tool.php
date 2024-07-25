@@ -579,6 +579,7 @@ class Tool extends BaseController
         foreach ($tmp as $v) {
             $response = Requests::get($uri . implode(',', $v), [], []);
             Log::write($response->body);
+            dump($response->body);
         }
         return 'success';
     }
@@ -715,5 +716,52 @@ class Tool extends BaseController
                 break;
             }
         } while (!empty($data));
+    }
+
+    // 查询财务记录凭证缺少科目的运单
+    public function docForOrder()
+    {
+        $order_data = file_get_contents(runtime_path() . DIRECTORY_SEPARATOR . 'tmp.txt');
+        $order_data = json_decode($order_data, true);
+
+        $err = [];
+        $succ = [];
+        foreach ($order_data as $com_name => $item) {
+            foreach ($item as $order_num) {
+                $o_d = Db::connect('pro_order')->table('od')
+                    ->field('id,od_basic_id')
+                    ->whereRaw("group_id = 1000 and order_num = '{$order_num}'")
+                    ->fetchSql(false)->select()->toArray();
+                $log_d = Db::connect('pro_log')->table('log')
+                    ->field('id,doc_id,content')
+                    ->whereRaw("od_basic_id = '{$o_d[0]['od_basic_id']}' and type = 614")
+                    ->order('id', 'desc')
+                    ->fetchSql(false)->select()->toArray();
+                $doc_id = 0;
+                foreach ($log_d as $log_data) {
+                    $content = json_decode($log_data['content'], true);
+                    if ($content['finance_expense'] === 'pay_arrival') {
+                        $doc_id = $log_data['doc_id'];
+                        break;
+                    }
+                }
+                if ($doc_id == 0) {
+                    dd('no doc ' . $order_num);
+                }
+                $log_d = Db::connect('pro_finance')->table('ac_doc_detail')
+                    ->field('id')
+                    ->whereRaw("record_id = '{$doc_id}' and account_detail_id = 291720")
+                    ->fetchSql(false)->select()->toArray();
+                if (empty($log_d)) {
+                    $err[$com_name][] = $order_num;
+                } else {
+                    $succ[$com_name][] = $order_num;
+                }
+            }
+        }
+        dump($err);
+        dump($succ);
+        file_put_contents(runtime_path() . DIRECTORY_SEPARATOR . 'tmp1.txt', json_encode($err));
+        file_put_contents(runtime_path() . DIRECTORY_SEPARATOR . 'tmp2.txt', json_encode($succ));
     }
 }
