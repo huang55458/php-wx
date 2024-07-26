@@ -2,6 +2,7 @@
 
 // 应用公共文件
 use app\cnsts\ERRNO;
+use think\facade\Log;
 use think\response\Json;
 use think\response\View;
 
@@ -191,4 +192,23 @@ function doResponse($errno = ERRNO::SUCCESS, $errmsg = 'success', $res = [], $tp
         return \json($resp);
     }
     return view($tpl, $resp);
+}
+
+function decode_json($json) {
+    try {
+        return json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+    } catch (JsonException $e) {
+        Log::error($e->getMessage());
+    }
+    return json_last_error();
+}
+
+function encode_json($value, $options = JSON_UNESCAPED_UNICODE): bool|string
+{
+    try {
+        return json_encode($value, JSON_THROW_ON_ERROR | $options);
+    } catch (JsonException $e) {
+        Log::error($e->getMessage());
+    }
+    return false;
 }

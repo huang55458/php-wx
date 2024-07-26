@@ -4,9 +4,18 @@ namespace app\test;
 
 use DirectoryIterator;
 use PHPUnit\Framework\TestCase;
+use think\App;
+use const JSON_ERROR_NONE;
 
 class ToolTest extends TestCase
 {
+    public function __construct(string $name)
+    {
+        parent::__construct($name);
+        $http = (new App())->http;
+        $http->run();
+    }
+
     public function testStream(): void
     {
         // 限制内存为 5 MB, php://temp 会在内存量达到预定义的限制后（默认是 2MB）存入临时文件中
@@ -104,5 +113,38 @@ class ToolTest extends TestCase
         }
         $this->assertEquals(13, array_sum($data));
         fclose($file_handle);
+    }
+
+    public function testDevShm(): void
+    {
+        function set($key, $value): bool|int
+        {
+            $file_name = md5(__CLASS__) . '_' . $key;
+            $path = '/dev/shm/' . $file_name;
+            $value = is_array($value) ? encode_json($value) : $value;
+            return file_put_contents($path, $value);
+        }
+        function get($key){
+            $file_name = md5(__CLASS__) . '_' . $key;
+            $path = '/dev/shm/' . $file_name;
+            $value = file_get_contents($path);
+            if (($json = decode_json($value)) !== JSON_ERROR_NONE) {
+                return $json;
+            }
+            return $value;
+        }
+        function delete($key): bool
+        {
+            $file_name = md5(__CLASS__) . '_' . $key;
+            $path = '/dev/shm/' . $file_name;
+            return unlink($path);
+        }
+
+        $key = 'hello';
+        $value = ['key', 'value' => 'world'];
+        set($key, $value);
+        $val = get($key);
+        $this->assertStringContainsString(encode_json($value), encode_json($val));
+        delete($key);
     }
 }
