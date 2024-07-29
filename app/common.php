@@ -212,3 +212,8 @@ function encode_json($value, $options = JSON_UNESCAPED_UNICODE): bool|string
     }
     return false;
 }
+
+register_shutdown_function(static function () {
+    $error = error_get_last();
+    Log::error(encode_json($error));
+});
