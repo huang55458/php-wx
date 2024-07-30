@@ -66,6 +66,7 @@ return [
         ],
         //自定义连接池
     ],
+//     同一台主机上两个进程间通信
     'ipc'        => [
         'type'  => 'unix_socket',
         'redis' => [

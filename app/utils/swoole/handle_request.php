@@ -7,6 +7,7 @@ use Swoole\Process;
 use think\facade\Log;
 use WpOrg\Requests\Requests;
 use think\App;
+use Swoole\Coroutine\Client;
 
 $time = time();
 register_shutdown_function(static function () use ($time) {
@@ -38,14 +39,19 @@ $table->create();
 $atomic = new Swoole\Atomic();
 $lock = new Swoole\Lock(SWOOLE_MUTEX);
 $handled_times = new Swoole\Atomic();
+$client = new Client(SWOOLE_SOCK_TCP);
 foreach ($ids as $key => $item) {
     $table->set($key, ['value' => implode(',', $item)]);
 }
 
-$fun = static function () use ($handled_times, $total_count) {
-    swoole_timer_tick(2000, static function (int $timer_id) use ($handled_times, $total_count) {
+$fun = static function () use ($handled_times, $total_count, $client) {
+    swoole_timer_tick(1000, static function (int $timer_id) use ($handled_times, $total_count, $client) {
         $hint = sprintf("------------------ 当前执行进度：%0.2f%s\n", $handled_times->get() / $total_count * 100, '%');
-        echo $hint;
+        Log::write($hint);
+        if (!$client->connected && !$client->connect('127.0.0.1', 9501, 0.5)) {
+            echo "connect failed. Error: {$client->errCode} ErrorMsg: {$client->errMsg}\n";
+        }
+        $client->send($handled_times->get() / $total_count * 100);
 //        Coroutine::exec("echo -e '\033[1m{$hint}\033[0m'"); // 无法输出到命令行
 //        $notifier = new DefaultNotifier();
 //        $notification = (new Notification())->setTitle('php program progress')->setBody(round($handled_times->get() / $total_count * 100, 2) . '%');
