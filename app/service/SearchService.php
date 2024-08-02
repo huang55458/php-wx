@@ -369,9 +369,9 @@ class SearchService
                 $field .= '.' . $suffix;
             }
         }
-        $default_header = ELASTIC_SEARCH::TABLE_MAP[$this->index]['properties'];
+        $default_header = ELASTIC_SEARCH::TABLE_MAP[$this->index]['properties'] ?? [];
         $analyzer = $default_header[$field]['analyzer']['fields']['like']['analyzer'] ?? ELASTIC_SEARCH::ANALYZER_NONE;
-        $field_type = $default_header[$field]['type'];
+        $field_type = $default_header[$field]['type'] ?? ELASTIC_SEARCH::TYPE_KEYWORD;
         if ($analyzer !== ELASTIC_SEARCH::ANALYZER_NONE && $exact_match === false && !in_array('', $value, true) && mb_strlen($value[0]) <= 32) {
             $field .= '.' . $analyzer;
         } else {
