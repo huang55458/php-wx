@@ -107,8 +107,10 @@ class ToolService extends \think\Service
 
         foreach ($res_data['res']['data'] as $v) {
             if (!isset($v['Accounts|doc_date'])) {
-                dump($v['settle_no'] . ' 不存在凭证日期');
-                Log::write($v['settle_no'] . ' 不存在凭证日期');
+                if (!in_array($v['expense_disp'], [95,61,64])) {
+                    dump($v['settle_no'] . ' 不存在凭证日期');
+                    Log::write($v['settle_no'] . ' 不存在凭证日期');
+                }
                 continue;
             }
             if ($v['Accounts|doc_date'] < '2024-04-01 00:00:00' || $v['Accounts|doc_date'] > '2024-04-30 23:59:59') {
@@ -129,8 +131,10 @@ class ToolService extends \think\Service
                 $res_data = $response->decode_body();
                 foreach ($res_data['res']['data'] as $v) {
                     if (!isset($v['Accounts|doc_date'])) {
-                        dump($v['settle_no'] . ' 不存在凭证日期');
-                        Log::write($v['settle_no'] . ' 不存在凭证日期');
+                        if (!in_array($v['expense_disp'], [95,61,64])) {
+                            dump($v['settle_no'] . ' 不存在凭证日期');
+                            Log::write($v['settle_no'] . ' 不存在凭证日期');
+                        }
                         continue;
                     }
                     if ($v['Accounts|doc_date'] < '2024-04-01 00:00:00' || $v['Accounts|doc_date'] > '2024-04-30 23:59:59') {

@@ -37,6 +37,9 @@ class ExceptionHandle extends Handle
      */
     public function report(Throwable $exception): void
     {
+        if (PHP_SAPI === 'cli') {
+            dump($exception);
+        }
         // 使用内置的方式记录异常日志
         parent::report($exception);
     }
@@ -52,7 +55,9 @@ class ExceptionHandle extends Handle
     public function render($request, Throwable $e): Response
     {
         // 添加自定义异常处理机制
-
+        if (PHP_SAPI === 'cli') { // 命令行执行时不需要显示html信息
+            return json([]);
+        }
         // 其他错误交给系统处理
         return parent::render($request, $e);
     }

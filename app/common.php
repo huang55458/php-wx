@@ -213,7 +213,10 @@ function encode_json($value, $options = JSON_UNESCAPED_UNICODE): bool|string
     return false;
 }
 
-register_shutdown_function(static function () {
-    $error = error_get_last();
-    Log::error(encode_json($error));
-});
+if (PHP_SAPI === 'cli') {
+    $time = time();
+    register_shutdown_function(static function () use ($time) {
+        echo '【执行耗时：' . (time() - $time) . ' seconds，';
+        echo '内存峰值：' . round(memory_get_peak_usage() / 1024 / 1024, 2) . ' M】' . PHP_EOL;
+    });
+}
