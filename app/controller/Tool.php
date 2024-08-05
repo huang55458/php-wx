@@ -347,11 +347,22 @@ class Tool extends BaseController
         jdd('success');
     }
 
-    public function es($option)
+    public function es($option, $environment)
     {
-        $uri = 'http://gamma.vkj56.cn:8009/api/Table/Tools/searchByOption?';
-        $option = json_decode($option, true);
-        $option = json_decode($option, true, 512, JSON_THROW_ON_ERROR);
+        switch ($environment) {
+            case 'gamma8008':
+                $uri = 'http://gamma.vkj56.cn:8008/api/Table/Tools/searchByOption?';
+                break;
+            case 'gamma8009':
+                $uri = 'http://gamma.vkj56.cn:8009/api/Table/Tools/searchByOption?';
+                break;
+            case '306':
+                $uri = 'http://w-sas-1000-web-alpha-00.vkj56.cn:306/api/Table/Tools/searchByOption?';
+                break;
+            default:
+                return json('error');
+        }
+        $option = decode_json($option);
         if (empty($option) || !is_array($option)) {
             return json('error');
         }

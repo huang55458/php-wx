@@ -1,0 +1,85 @@
+### 查看运行中的任务
+GET http://{{host}}/_tasks
+Authorization: Basic {{username}} {{password}}
+
+
+### 终止任务
+GET http://{{host}}/_tasks/q_dYEZ9sS1GypLSZXOPOHg:79278000/_cancel
+Authorization: Basic {{username}} {{password}}
+
+
+### es语法查询
+POST http://{{host}}/tms-pro-order-beta-1/_doc/_search
+Authorization: Basic {{username}} {{password}}
+Content-Type: application/json
+
+{
+  "from": 0,
+  "size": 1000,
+  "timeout": "2s",
+  "terminate_after": 50000,
+  "track_scores": false,
+  "_source": false,
+  "query": {
+    "bool": {
+      "filter": {
+        "bool": {
+          "must": [
+            {
+              "term": {
+                "group_id": 1000
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "aggs" : {
+    "ol_create_time" : {
+      "date_histogram" : {
+        "field" : "date",
+        "interval" : "day"
+      }
+    }
+  },
+  "sort": [
+    {
+      "ol_create_time": "desc"
+    }
+  ]
+}
+
+
+### GET 请求获取，默认10条
+GET http://{{host}}/tms-pro-batch-alpha-1219/_doc/_search?timeout=1s
+Authorization: Basic {{username}} {{password}}
+
+
+### 根据_id删除
+DELETE http://{{host}}/tms-pro-batch-alpha-1219/_doc/1000_37747115?timeout=2m
+Authorization: Basic {{username}} {{password}}
+
+
+### SQL 语法查询
+POST http://{{host}}/_xpack/sql?format=json
+Authorization: Basic {{username}} {{password}}
+Content-Type: application/json
+
+{
+  "query": "select cor_name from \"tms-pro-order-beta-1\" where cor_name rlike '小发.'",
+  "fetch_size": 1000,
+  "request_timeout": "2s"
+}
+
+
+### SQL查询转换为 ES语法
+POST http://{{host}}/_xpack/sql/translate
+Authorization: Basic {{username}} {{password}}
+Content-Type: application/json
+
+{
+  "query": "SELECT uuid,group_id,id FROM \"tms-pro-batch-alpha-1219\" WHERE group_id = 1000 AND id IN ('1_1','2_1','3_1') and uuid rlike '^ab1{2}\\w*$'",
+  "fetch_size": 1000,
+  "request_timeout": "2s"
+}
