@@ -56,7 +56,10 @@
         "swoole/ide-helper": "^4.8",
         "friendsofphp/php-cs-fixer": "^3.51",
         "icomefromthenet/reverse-regex": "^0.1.0",
-        "squizlabs/php_codesniffer": "*"
+        "squizlabs/php_codesniffer": "*",
+        "vimeo/psalm": "^0.3.14",
+        "phpstan/phpstan": "^1.11",
+        "phpmd/phpmd": "^2.15"
     },
     "autoload": {
         "psr-4": {
