@@ -21,6 +21,7 @@ class SQL
             } elseif (is_null($v)) {
                 $val[] = 'null';
             } else {
+                $v = str_replace("'", "\'", $v);
                 $val[] = "'" . $v . "'";
             }
 
@@ -66,7 +67,11 @@ class SQL
      */
     public function create()
     {
-        //
+        $data = [
+            'id' => 1,
+            'ext' => "'ffffff"
+        ];
+        return $this->create_sql('od', $data);
     }
 
     /**
