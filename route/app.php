@@ -10,6 +10,7 @@
 // +----------------------------------------------------------------------
 use think\facade\Request;
 use think\facade\Route;
+use think\swoole\response\File;
 
 Route::get('think', function () {
     return 'hello,ThinkPHP6!';
@@ -22,3 +23,26 @@ Route::get('hello/:name', 'index/hello');
 //Route::miss(static function() {
 //    return response(file_get_contents(root_path().Request::url()));
 //});
+
+Route::get('favicon.ico', static function () {
+    return new File(public_path() . 'favicon.ico');
+});
+
+/**
+ * css、js 文件被返回成 text/plain,手动修改代码
+ * public function setAutoContentType()
+ * {
+ *     $mimeType = mime_content_type_f($this->file->getPathname());
+ *     if ($mimeType) {
+ *         $this->header['Content-Type'] = $mimeType;
+ *     }
+ * }
+ */
+Route::get('static/:path', static function (string $path) {
+    $filename = public_path() . 'static/' . $path;
+    if (!is_file($filename)) {
+        $filename = public_path() . Request::url();
+    }
+
+    return new File($filename);
+})->pattern(['path' => '.*']);

@@ -6,10 +6,10 @@ use think\facade\Log;
 use think\response\Json;
 use think\response\View;
 
-function jdd($var, $name = null)
+function jdd($var, $name = null): void
 {
     header('Content-Type: application/json; charset=utf-8');
-    if(is_scalar($name)) {
+    if (is_scalar($name)) {
         $var = [$name => $var];
     }
     echo json_encode($var, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . PHP_EOL;
@@ -39,7 +39,7 @@ function test_curl($type = 'get', $param = [], $return = 'php')
     $res = curl_exec($ch);
     curl_close($ch);
     if ($return === 'php') {
-        return json_decode($res, true);
+        return decode_json($res);
     }
     return $res;
 }
@@ -115,16 +115,9 @@ function export_csv($file_name, $header, $body, $footer = [], $charset = 'GBK')
     fclose($fp);
 }
 
-function checkTime($string)
+function checkTime($string): bool
 {
-    if (
-        date('Y-m-d H:i:s', strtotime($string)) === $string
-        or date('Y-m-d', strtotime($string)) === $string
-    ) {
-        return true;
-    } else {
-        return false;
-    }
+    return date('Y-m-d H:i:s', strtotime($string)) === $string || date('Y-m-d', strtotime($string)) === $string;
 }
 
 /**
@@ -136,27 +129,31 @@ function checkTime($string)
 function get_ip(int $type = 0, bool $adv = false): mixed
 {
     $type       =  $type ? 1 : 0;
-    static $ip  =   NULL;
-    if ($ip !== NULL) return $ip[$type];
-    if($adv){
+    static $ip  =   null;
+    if ($ip !== null) {
+        return $ip[$type];
+    }
+    if ($adv) {
         if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
             $arr    =   explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
-            $pos    =   array_search('unknown',$arr);
-            if(false !== $pos) unset($arr[$pos]);
+            $pos    =   array_search('unknown', $arr);
+            if (false !== $pos) {
+                unset($arr[$pos]);
+            }
             $ip     =   trim($arr[0]);
-        }elseif (isset($_SERVER['HTTP_CLIENT_IP'])) {
+        } elseif (isset($_SERVER['HTTP_CLIENT_IP'])) {
             $ip     =   $_SERVER['HTTP_CLIENT_IP'];
-        }elseif (isset($_SERVER['REMOTE_ADDR'])) {
+        } elseif (isset($_SERVER['REMOTE_ADDR'])) {
             $ip     =   $_SERVER['REMOTE_ADDR'];
         }
-    }elseif (isset($_SERVER['REMOTE_ADDR'])) {
+    } elseif (isset($_SERVER['REMOTE_ADDR'])) {
         $ip     =   $_SERVER['REMOTE_ADDR'];
     }
     // IP地址合法验证
-    if (filter_var($ip, \FILTER_VALIDATE_IP,\FILTER_FLAG_IPV4)) {
-        $long = sprintf("%u",ip2long($ip));
+    if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+        $long = sprintf("%u", ip2long($ip));
         $ip   = $long ? array($ip, $long) : array('0.0.0.0', 0);
-    } elseif (filter_var($ip, \FILTER_VALIDATE_IP,\FILTER_FLAG_IPV6)) {
+    } elseif (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
         $long = ip2long6($ip);
         $ip   = $long ? array($ip, $long) : array('::', 0);
     }
@@ -166,15 +163,16 @@ function get_ip(int $type = 0, bool $adv = false): mixed
 /**
  * IPV6 地址转换为整数
  * @param $ip
- * @return string
+ * @return bool|string
  */
-function ip2long6($ip)
+function ip2long6($ip): bool|string
 {
-    if(($ip_n = inet_pton($ip)) === false) return false;
+    if (($ip_n = inet_pton($ip)) === false) {
+        return false;
+    }
     $bits = 15; // 16 x 8 bit = 128bit (ipv6)
-    while ($bits >= 0)
-    {
-        $bin = sprintf("%08b",(ord($ip_n[$bits])));
+    while ($bits >= 0) {
+        $bin = sprintf("%08b", (ord($ip_n[$bits])));
         $ipbin = $bin.$ipbin;
         $bits--;
     }
@@ -194,7 +192,8 @@ function doResponse($errno = ERRNO::SUCCESS, $errmsg = 'success', $res = [], $tp
     return view($tpl, $resp);
 }
 
-function decode_json($json) {
+function decode_json($json)
+{
     try {
         return json_decode($json, true, 512, JSON_THROW_ON_ERROR);
     } catch (JsonException $e) {
@@ -219,4 +218,78 @@ if (PHP_SAPI === 'cli') {
         echo '【执行耗时：' . (time() - $time) . ' seconds，';
         echo '内存峰值：' . round(memory_get_peak_usage() / 1024 / 1024, 2) . ' M】' . PHP_EOL;
     });
+}
+
+function mime_content_type_f($filename)
+{
+    $mime_types = array(
+
+        'txt' => 'text/plain',
+        'htm' => 'text/html',
+        'html' => 'text/html',
+        'php' => 'text/html',
+        'css' => 'text/css',
+        'js' => 'application/javascript',
+        'json' => 'application/json',
+        'xml' => 'application/xml',
+        'swf' => 'application/x-shockwave-flash',
+        'flv' => 'video/x-flv',
+
+        // images
+        'png' => 'image/png',
+        'jpe' => 'image/jpeg',
+        'jpeg' => 'image/jpeg',
+        'jpg' => 'image/jpeg',
+        'gif' => 'image/gif',
+        'bmp' => 'image/bmp',
+        'ico' => 'image/vnd.microsoft.icon',
+        'tiff' => 'image/tiff',
+        'tif' => 'image/tiff',
+        'svg' => 'image/svg+xml',
+        'svgz' => 'image/svg+xml',
+
+        // archives
+        'zip' => 'application/zip',
+        'rar' => 'application/x-rar-compressed',
+        'exe' => 'application/x-msdownload',
+        'msi' => 'application/x-msdownload',
+        'cab' => 'application/vnd.ms-cab-compressed',
+
+        // audio/video
+        'mp3' => 'audio/mpeg',
+        'qt' => 'video/quicktime',
+        'mov' => 'video/quicktime',
+
+        // adobe
+        'pdf' => 'application/pdf',
+        'psd' => 'image/vnd.adobe.photoshop',
+        'ai' => 'application/postscript',
+        'eps' => 'application/postscript',
+        'ps' => 'application/postscript',
+
+        // ms office
+        'doc' => 'application/msword',
+        'rtf' => 'application/rtf',
+        'xls' => 'application/vnd.ms-excel',
+        'ppt' => 'application/vnd.ms-powerpoint',
+
+        // open office
+        'odt' => 'application/vnd.oasis.opendocument.text',
+        'ods' => 'application/vnd.oasis.opendocument.spreadsheet',
+    );
+
+    $arr = explode('.', $filename);
+    $ext = strtolower(array_pop($arr));
+    if (array_key_exists($ext, $mime_types)) {
+        return $mime_types[$ext];
+    }
+
+    if (function_exists('finfo_open')) {
+        $finfo = finfo_open(FILEINFO_MIME);
+        $mimetype = finfo_file($finfo, $filename);
+        finfo_close($finfo);
+        return $mimetype;
+    }
+
+    return 'application/octet-stream';
 }

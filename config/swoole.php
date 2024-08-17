@@ -5,7 +5,7 @@ return [
         'enable'     => true,
         'host'       => '0.0.0.0',
         'port'       => 45200,
-        'worker_num' => swoole_cpu_num(),
+        'worker_num' => swoole_cpu_num() * 2,
         'options'    => [],
     ],
     'websocket'  => [
@@ -47,7 +47,8 @@ return [
         'workers' => [],
     ],
     'hot_update' => [
-        'enable'  => env('APP_DEBUG', false),
+//        'enable'  => env('APP_DEBUG', false),
+        'enable'  => true,
         'name'    => ['*.php'],
         'include' => [app_path()],
         'exclude' => [],
