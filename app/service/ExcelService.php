@@ -4,6 +4,7 @@ declare (strict_types=1);
 
 namespace app\service;
 
+use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\Helper\Sample;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -13,31 +14,16 @@ use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 use think\Collection;
+use think\Service;
 
-class ExcelService extends \think\Service
+class ExcelService extends Service
 {
     // 26列，一般够用
-    private array $column = [1 => 'A', 2 => 'B', 3 => 'C', 4 => 'D', 5 => 'E', 6 => 'F', 7 => 'G', 8 => 'H', 9 => 'I', 10 => 'J', 11 => 'K', 12 => 'L', 13 => 'M', 14 => 'N', 15 => 'O', 16 => 'P', 17 => 'Q', 18 => 'R', 19 => 'S', 20 => 'T', 21 => 'U', 22 => 'V', 23 => 'W', 24 => 'X', 25 => 'Y', 26 => 'Z'];
-
-    /**
-     * 注册服务
-     *
-     * @return mixed
-     */
-    public function register()
-    {
-        //
-    }
-
-    /**
-     * 执行服务
-     *
-     * @return mixed
-     */
-    public function boot()
-    {
-        //
-    }
+    private array $column = [
+        1 => 'A', 2 => 'B', 3 => 'C', 4 => 'D', 5 => 'E', 6 => 'F', 7 => 'G', 8 => 'H', 9 => 'I', 10 => 'J', 11 => 'K',
+        12 => 'L', 13 => 'M', 14 => 'N', 15 => 'O', 16 => 'P', 17 => 'Q', 18 => 'R', 19 => 'S', 20 => 'T', 21 => 'U',
+        22 => 'V', 23 => 'W', 24 => 'X', 25 => 'Y', 26 => 'Z'
+    ];
 
     /**
      * @param array $header ['name','tel']
@@ -47,10 +33,10 @@ class ExcelService extends \think\Service
      *      ['name' => 'test2', 'tel' => 234]
      * ]
      * @return void
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
-    public function exportXlsx(array $header, $data)
+    public function exportXlsx(array $header, $data): void
     {
         $helper = new Sample();
         if ($helper->isCli()) {
@@ -101,7 +87,7 @@ class ExcelService extends \think\Service
         exit;
     }
 
-    public function loadXlsx($filename)
+    public function loadXlsx($filename): array
     {
         $res = [];
         $spreadsheet = IOFactory::load($filename);
@@ -119,7 +105,7 @@ class ExcelService extends \think\Service
         return $res;
     }
 
-    public function setValue($spreadsheet, array $header, Collection $data)
+    public function setValue($spreadsheet, array $header, Collection $data): void
     {
         $map = [];
         $i = 1;
@@ -141,7 +127,7 @@ class ExcelService extends \think\Service
         }
     }
 
-    public function setArrayValue($spreadsheet, array $header, array $data)
+    public function setArrayValue($spreadsheet, array $header, array $data): void
     {
         $map = [];
         $i = 1;
@@ -166,9 +152,9 @@ class ExcelService extends \think\Service
     /**
      * 一些常用方法
      * @return void
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws Exception
      */
-    public function test()
+    public function test(): void
     {
         // 创建新的 Excel 实例
         $spreadsheet = new Spreadsheet();
@@ -259,7 +245,6 @@ class ExcelService extends \think\Service
         // 导入
         $spreadsheet = IOFactory::load('tmp.xlsx');
         $sheet = $spreadsheet->getActiveSheet();
-        $data = $sheet->toArray();
-        //        var_dump($data);
+        $sheet->toArray();
     }
 }
