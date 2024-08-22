@@ -2,16 +2,28 @@
 
 namespace app\test;
 
+use Exception;
 use PhpOffice\PhpSpreadsheet\Cell\AdvancedValueBinder;
 use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use PhpOffice\PhpSpreadsheet\Cell\CellAddress;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Cell\DataValidation;
+use PhpOffice\PhpSpreadsheet\Document\Properties;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\NamedFormula;
+use PhpOffice\PhpSpreadsheet\NamedRange;
 use PhpOffice\PhpSpreadsheet\Reader\Csv;
+use PhpOffice\PhpSpreadsheet\RichText\RichText;
 use PhpOffice\PhpSpreadsheet\Shared\Date as SharedDate;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use PhpOffice\PhpSpreadsheet\Shared\StringHelper;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Color;
+use PhpOffice\PhpSpreadsheet\Style\Conditional;
+use PhpOffice\PhpSpreadsheet\Style\ConditionalFormatting\Wizard;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat\Wizard\Accounting;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat\Wizard\Currency;
@@ -20,9 +32,14 @@ use PhpOffice\PhpSpreadsheet\Style\NumberFormat\Wizard\Number;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat\Wizard\Percentage;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat\Wizard\Scientific;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat\Wizard\Time;
+use PhpOffice\PhpSpreadsheet\Style\Protection;
+use PhpOffice\PhpSpreadsheet\Worksheet\AutoFilter\Column;
+use PhpOffice\PhpSpreadsheet\Worksheet\AutoFilter\Column\Rule;
 use PhpOffice\PhpSpreadsheet\Worksheet\CellIterator;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use think\App;
 
 /**
@@ -57,7 +74,7 @@ class ExcelTest extends TestCase
         // 数值
         $this->worksheet->getCell('A1')->setValue(-12345.67890);
         $this->worksheet->getCell('A1')->getStyle()->getNumberFormat() // 保留三位小数，使用千位分隔符
-            ->setFormatCode((string) new Number(3, Number::WITH_THOUSANDS_SEPARATOR));
+        ->setFormatCode((string)new Number(3, Number::WITH_THOUSANDS_SEPARATOR));
         getCellValue($this->worksheet, 'A1');
 
         // 货币
@@ -219,10 +236,11 @@ class ExcelTest extends TestCase
             $startRow += $batchSize;
 
             foreach ($dataArray as $row) {
-                if (count(array_filter($row, static function ($value) {
+                $count = count(array_filter($row, static function ($value) {
                     return $value !== null;
-                })) === 0) {
-                    continue;   // Ignore empty rows
+                }));
+                if ($count === 0) { // Ignore empty rows
+                    continue;
                 }
                 echo 1;
             }
@@ -235,9 +253,10 @@ class ExcelTest extends TestCase
         $start = memory_get_usage();
         $rowGenerator = $worksheet->rangeToArrayYieldRows('A1:' . $maxDataColumn . $maxDataRow, returnCellRef: true);
         foreach ($rowGenerator as $row) {
-            if (count(array_filter($row, static function ($value) {
+            $count = count(array_filter($row, static function ($value) {
                 return $value !== null;
-            })) === 0) {
+            }));
+            if ($count === 0) { // Ignore empty rows
                 continue;
             }
             echo 1;
@@ -359,10 +378,10 @@ class ExcelTest extends TestCase
         {
             $arrayData = [
                 [null, 2010, 2011, 2012],
-                ['Q1',   12,   15,   21],
-                ['Q2',   56,   73,   86],
-                ['Q3',   52,   61,   69],
-                ['Q4',   30,   32,    0],
+                ['Q1', 12, 15, 21],
+                ['Q2', 56, 73, 86],
+                ['Q3', 52, 61, 69],
+                ['Q4', 30, 32, 0],
             ];
             $spreadsheet->getActiveSheet()->fromArray($arrayData, null, 'C3');
         }
@@ -389,5 +408,624 @@ class ExcelTest extends TestCase
             $spreadsheet->getActiveSheet()->getCell('B2')->getFormattedValue()
         );
         dump($spreadsheet->getActiveSheet()->toArray(returnCellRef: true));
+    }
+
+    /**
+     * 自动筛选
+     * 在 MS Excel 中，自动过滤还允许对行进行排序。PhpSpreadsheet不支持此功能
+     * @link https://phpspreadsheet.readthedocs.io/en/latest/topics/autofilters/
+     * @return void
+     */
+    public function testAutoFilter(): void
+    {
+        $spreadsheet = new Spreadsheet();
+        $arrayData = [
+            ['姓名', '性别', '年龄', '手机号', '邮箱', '身份证号', '创建时间', '更新时间'],
+            ['程怡轩', '男', '33', '17257567775', 'ibuzb0450@gmail.com', '840217184412308297', '2024-07-22 09:13:28', '2024-08-22 09:13:28'],
+            ['史妍', '女', '36', '18264964523', 'ukmx358@gmail.com', '409997196512144730', '2024-04-22 09:13:28', '2024-07-22 09:13:28'],
+            ['武姣涵', '女', '28', '15816887969', 'ukmx358@gmail.com', '840217184412308297', '2023-07-22 09:13:28', '2024-07-22 09:13:28'],
+        ];
+        $arrayData = array_map(static function ($value) {
+            if ($value[0] === '姓名') {
+                return $value;
+            }
+            $value[6] = SharedDate::PHPToExcel($value[6]);
+            $value[7] = SharedDate::PHPToExcel($value[7]);
+            return $value;
+        }, $arrayData);
+        $spreadsheet->getActiveSheet()->fromArray($arrayData);
+        // 将整个工作表设置为自动筛选区域,将启用过滤，但实际上并不应用任何过滤器
+        $spreadsheet->getActiveSheet()->setAutoFilter(
+            $spreadsheet->getActiveSheet()->calculateWorksheetDimension()
+        );
+        // 获得一个自动过滤列对象
+        $autoFilter = $spreadsheet->getActiveSheet()->getAutoFilter();
+        $columnFilter = $autoFilter->getColumn('A');
+        // 简单过滤器,简单过滤器始终是 EQUALS 的比较匹配，而多个标准过滤器始终被视为由 OR 条件连接
+        {
+            $columnFilter->setFilterType(Column::AUTOFILTER_FILTERTYPE_FILTER);
+            $columnFilter->createRule()->setRule(Rule::AUTOFILTER_COLUMN_RULE_EQUAL, '程怡轩');
+            $columnFilter->createRule()->setRule(Rule::AUTOFILTER_COLUMN_RULE_EQUAL, '史妍');
+            // 选择空白单元格
+            $columnFilter->createRule()->setRule(Rule::AUTOFILTER_COLUMN_RULE_EQUAL, '');
+        }
+        // 日期过滤器
+        {
+            $columnFilter = $autoFilter->getColumn('G');
+            $columnFilter->setFilterType(Column::AUTOFILTER_FILTERTYPE_FILTER);
+            $columnFilter->createRule()->setRule(
+                Rule::AUTOFILTER_COLUMN_RULE_EQUAL,
+                [
+                    'year' => 2024,
+                    'month' => 7
+                ]
+            )->setRuleType(Rule::AUTOFILTER_RULETYPE_DATEGROUP);
+        }
+        // 自定义过滤器
+        {
+            $columnFilter = $autoFilter->getColumn('E');
+            $columnFilter->setFilterType(Column::AUTOFILTER_FILTERTYPE_CUSTOMFILTER);
+            /*
+             *  *通配符匹配任意数量的字符
+             *  ? 使用通配符匹配单个字符
+             *  U*相当于“以‘U’开头”；*U相当于“以‘U’结尾”；*U*相当于“包含‘U’”
+             *  需要注意，PhpSpreadsheet 仅在相等/不相等测试中识别通配符。如果要明确匹配*或?，可以使用波浪符号 进行转义~，
+             *  ?~**就可以明确匹配* 单元格值中的第二个字符，后面跟着任意数量的其他字符。唯一需要转义的其他字符是 本身~
+             */
+            $columnFilter->createRule()
+                ->setRule(
+                    Rule::AUTOFILTER_COLUMN_RULE_EQUAL,
+                    '*@gmail.com'
+                )->setRuleType(Rule::AUTOFILTER_RULETYPE_CUSTOMFILTER);
+            $columnFilter->createRule()
+                ->setRule(
+                    Rule::AUTOFILTER_COLUMN_RULE_NOTEQUAL,
+                    '*358*'
+                )->setRuleType(Rule::AUTOFILTER_RULETYPE_CUSTOMFILTER);
+            // 修改连接条件为AND
+            $columnFilter->setJoin(Column::AUTOFILTER_COLUMN_JOIN_AND);
+        }
+        // 动态过滤器, 比如创建时间为今天
+        {
+            $columnFilter = $autoFilter->getColumn('H');
+            $columnFilter->setFilterType(
+                Column::AUTOFILTER_FILTERTYPE_DYNAMICFILTER
+            );
+            // 定义动态过滤器的规则时，不定义值,可以简单地将其设置为空字符串
+            $columnFilter->createRule()->setRule(
+                Rule::AUTOFILTER_COLUMN_RULE_EQUAL,
+                '',
+                Rule::AUTOFILTER_RULETYPE_DYNAMIC_TODAY
+            )->setRuleType(Rule::AUTOFILTER_RULETYPE_DYNAMICFILTER);
+        }
+        // 前十项
+        {
+            $columnFilter = $autoFilter->getColumn('B');
+            $columnFilter->setFilterType(
+                Column::AUTOFILTER_FILTERTYPE_TOPTENFILTER
+            );
+            // 过滤列中前 5% 的值
+            $columnFilter->createRule()->setRule(
+                Rule::AUTOFILTER_COLUMN_RULE_TOPTEN_PERCENT,
+                5,
+                Rule::AUTOFILTER_COLUMN_RULE_TOPTEN_TOP
+            )->setRuleType(Rule::AUTOFILTER_RULETYPE_TOPTENFILTER);
+        }
+        // 将符合过滤条件的所有行设置为可见，同时隐藏自动过滤区域内的所有其他行, 也会在保存的时候应用
+        $autoFilter->showHideRows();
+        // 重新应用电子表格中的所有过滤器
+        //        $spreadsheet->reevaluateAutoFilters(false);
+
+        // 显示已过滤的行
+        {
+            foreach ($spreadsheet->getActiveSheet()->getRowIterator() as $row) {
+                if ($spreadsheet->getActiveSheet()->getRowDimension($row->getRowIndex())->getVisible()) {
+                    if ($row->getRowIndex() === 1) {
+                        continue;
+                    }
+                    $this->assertEquals(
+                        '程怡轩',
+                        $spreadsheet->getActiveSheet()->getCell('A' . $row->getRowIndex())->getValue()
+                    );
+                }
+            }
+        }
+        // 结束行是工作表上使用的最后一行
+        $spreadsheet->getActiveSheet()->getStyle(
+            'G1:H' . $spreadsheet->getActiveSheet()->getHighestDataRow()
+        )->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_DATE_YYYYMMDD);
+        $spreadsheet->getActiveSheet()->getAutoFilter()->setRangeToMaxRow();
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $writer->save(sys_get_temp_dir() . "/test.xlsx");
+    }
+
+    /**
+     * 工作表
+     * @link https://phpspreadsheet.readthedocs.io/en/latest/topics/worksheets/
+     * @return void
+     */
+    public function testWorksheet(): void
+    {
+        $spreadsheet = $this->spreadsheet;
+        // 索引位置访问单个工作表
+        $spreadsheet->getSheet(0);
+        // 通过名称访问工作表
+        $spreadsheet->getSheetByName('Worksheet');
+        // 打开工作簿时处于活动状态的工作表
+        $spreadsheet->getActiveSheet();
+        // 更改当前活动的工作表
+        $spreadsheet->setActiveSheetIndex(0);
+        $spreadsheet->setActiveSheetIndexByName('Worksheet');
+
+        // 添加
+        {
+            $myWorkSheet = new Worksheet($spreadsheet, 'Worksheet 2');// 如果没有指定索引位置作为第二个参数，那么新工作表将被添加到最后一个现有工作表之后
+            $spreadsheet->addSheet($myWorkSheet, 0);
+        }
+        // 复制
+        {
+            $clonedWorksheet = clone $spreadsheet->getSheetByName('Worksheet 2');
+            $clonedWorksheet->setTitle('Copy of Worksheet 2');
+            $spreadsheet->addSheet($clonedWorksheet);
+
+            //复制样式 这个测试未通过，修改标题hashcode()校验不通过，抛出异常；不改标题直接提示已存在
+            //            $clonedWorksheet2 = clone $spreadsheet->getSheetByName('Worksheet');
+            //            $spreadsheet->addExternalSheet($clonedWorksheet2);
+        }
+        // 删除  删除当前活动的工作表，则前一个索引位置处的工作表将成为当前活动的工作表
+        {
+            $sheetIndex = $spreadsheet->getIndex(
+                $spreadsheet->getSheetByName('Copy of Worksheet 2')
+            );
+            $spreadsheet->removeSheetByIndex($sheetIndex);
+        }
+        $this->assertEquals(2, $spreadsheet->getSheetCount());
+    }
+
+    /**
+     * 样式操作
+     * @link https://phpspreadsheet.readthedocs.io/en/latest/topics/recipes/
+     * @return void
+     * @throws Exception
+     */
+    public function testRecipes(): void
+    {
+        $spreadsheet = $this->spreadsheet;
+        $worksheet = $spreadsheet->getActiveSheet();
+        //设置电子表格的元数据
+        {
+            $spreadsheet->getProperties()
+                ->setTitle("Test Document")
+                ->setSubject("XLSX Test Document")
+                ->setCreator("chumeng")
+                ->setLastModifiedBy("chumeng")
+                ->setCategory("Test result file")
+                ->setKeywords("office 2007 php")
+                ->setDescription("Test document for Office 2007 XLSX, generated using PHP classes.");
+            $spreadsheet->getProperties()
+                ->setCustomProperty('Editor', 'Mark Baker')
+                ->setCustomProperty('Version', 1.17)
+                ->setCustomProperty('Tested', true)
+                ->setCustomProperty('Test Date', '2021-03-17', Properties::PROPERTY_TYPE_DATE);
+        }
+        //单元格公式
+        {
+            $worksheet->setCellValue('B8', '=IF(C4>500,"profit","loss")');
+            $worksheet->setCellValue('D1', '=SUM(ABS(ANCHORARRAY(A1)))');
+            // 以字符串的形式写入，不计算
+            $worksheet->setCellValueExplicit('B8', '=IF(C4>500,"profit","loss")', DataType::TYPE_STRING);
+        }
+        //单元格中写入换行符“\n”（ALT+Enter）
+        {
+            $worksheet->getCell('A1')->setValue("hello\nworld");
+            $worksheet->getStyle('A1')->getAlignment()->setWrapText(true);
+            //自动为单元格启用“文本换行”
+            Cell::setValueBinder(new AdvancedValueBinder());
+            $worksheet->getCell('A1')->setValue("hello\nworld");
+        }
+        //明确设置单元格的数据类型 setCellValueExplicit() 也可以
+        $worksheet->getCell('A1')->setValueExplicit('25', DataType::TYPE_NUMERIC);
+        //将单元格更改为可点击的 URL
+        {
+            $worksheet->setCellValue('E26', 'www.phpexcel.net');
+            $worksheet->getCell('E26')->getHyperlink()->setUrl('https://www.example.com');
+            //指向另一个工作表/单元格的超链接
+            $worksheet->setCellValue('E26', 'www.phpexcel.net');
+            $worksheet->getCell('E26')->getHyperlink()->setUrl("sheet://'Sheetname'!A1");
+        }
+        // 打印机选项：略，暂时用不到，详细参考文档
+        // 样式
+        {
+            //将单元格的前景色设置为红色、右对齐，并将边框设置为黑色和粗边框样式
+            $worksheet->getStyle('B2')->getFont()->getColor()->setARGB(Color::COLOR_RED);
+            $worksheet->getStyle('B2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+            $worksheet->getStyle('B2')->getBorders()->getTop()->setBorderStyle(Border::BORDER_THICK);
+            $worksheet->getStyle('B2')->getBorders()->getBottom()->setBorderStyle(Border::BORDER_THICK);
+            $worksheet->getStyle('B2')->getBorders()->getLeft()->setBorderStyle(Border::BORDER_THICK);
+            $worksheet->getStyle('B2')->getBorders()->getRight()->setBorderStyle(Border::BORDER_THICK);
+            $worksheet->getStyle('B2')->getFill()->setFillType(Fill::FILL_SOLID);
+            $worksheet->getStyle('B2')->getFill()->getStartColor()->setARGB('FFFF0000');
+            //设置红色背景颜色
+            $worksheet->getStyle('B3:B7')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFF0000');
+            //将单元格的样式设置为字体加粗、右对齐、上边框细和渐变填充
+            $styleArray = [
+                'font' => [
+                    'bold' => true,
+                ],
+                'alignment' => [
+                    'horizontal' => Alignment::HORIZONTAL_RIGHT,
+                ],
+                'borders' => [
+                    'top' => [
+                        'borderStyle' => Border::BORDER_THIN,
+                    ],
+                ],
+                'fill' => [
+                    'fillType' => Fill::FILL_GRADIENT_LINEAR,
+                    'rotation' => 90,
+                    'startColor' => [
+                        'argb' => 'FFA0A0A0',
+                    ],
+                    'endColor' => [
+                        'argb' => 'FFFFFFFF',
+                    ],
+                ],
+            ];
+            $worksheet->getStyle('A3')->applyFromArray($styleArray);
+            //将 Style 导出为数组
+            $worksheet->getStyle('A3')->exportArray();
+        }
+        //数字格式
+        {
+            $worksheet->getStyle('A1')->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+            //前导零填充数字以达到固定长度时
+            $worksheet->getCell('A1')->setValue(19);
+            $worksheet->getStyle('A1')->getNumberFormat()->setFormatCode('0000'); // 0019
+        }
+        //垂直对齐设置为顶部
+        $worksheet->getStyle('A1:D4')->getAlignment()->setVertical(Alignment::VERTICAL_TOP);
+        //设置工作簿的默认样式
+        {
+            $spreadsheet->getDefaultStyle()->getFont()->setName('Arial');
+            $spreadsheet->getDefaultStyle()->getFont()->setSize(8);
+            //主题字体
+            $spreadsheet->getTheme()->setThemeFontName('custom')
+                ->setMinorFontValues('Arial', 'Arial', 'Arial', []);
+            $spreadsheet->getDefaultStyle()->getFont()->setScheme('minor');
+            //将绑定到主题字体的单元格更改为其他字体
+            $spreadsheet->resetThemeFonts();
+        }
+        //单元格边框样式
+        {
+            $styleArray = [
+                'borders' => [
+                    'outline' => [
+                        'borderStyle' => Border::BORDER_THICK,
+                        'color' => ['argb' => 'FFFF0000'],
+                    ],
+                ],
+            ];
+            $worksheet->getStyle('B2:G8')->applyFromArray($styleArray);
+            /*
+             * $advancedBorders可以向 applyFromArray 提供第二个参数。默认值为true
+             * 设置为此值时，边框样式将应用于整个范围，而不是单个单元格。设置为 时false，边框样式将应用于每个单元格
+             */
+            $worksheet->setShowGridlines(false);
+            $styleArray = [
+                'borders' => [
+                    'bottom' => ['borderStyle' => 'hair', 'color' => ['argb' => 'FFFF0000']],
+                    'top' => ['borderStyle' => 'hair', 'color' => ['argb' => 'FFFF0000']],
+                    'right' => ['borderStyle' => 'hair', 'color' => ['argb' => 'FF00FF00']],
+                    'left' => ['borderStyle' => 'hair', 'color' => ['argb' => 'FF00FF00']],
+                ],
+            ];
+            $worksheet->getStyle('B2:C3')->applyFromArray($styleArray);
+            $worksheet->getStyle('B5:C6')->applyFromArray($styleArray, false);
+        }
+        //单元格的条件格式
+        {
+            //单元格的值小于零，则可以将其前景色设置为红色；如果单元格的值大于或等于零，则可以将其前景色设置为绿色
+            $conditional1 = new Conditional();
+            $conditional1->setConditionType(Conditional::CONDITION_CELLIS);
+            $conditional1->setOperatorType(Conditional::OPERATOR_LESSTHAN);
+            $conditional1->addCondition('0');
+            $conditional1->getStyle()->getFont()->getColor()->setARGB(Color::COLOR_RED);
+            $conditional1->getStyle()->getFont()->setBold(true);
+
+            $conditional2 = new Conditional();
+            $conditional2->setConditionType(Conditional::CONDITION_CELLIS);
+            $conditional2->setOperatorType(Conditional::OPERATOR_GREATERTHANOREQUAL);
+            $conditional2->addCondition('0');
+            $conditional2->getStyle()->getFont()->getColor()->setARGB(Color::COLOR_GREEN);
+            $conditional2->getStyle()->getFont()->setBold(true);
+
+            $conditionalStyles = $spreadsheet->getActiveSheet()->getStyle('B2')->getConditionalStyles();
+            $conditionalStyles[] = $conditional1;
+            $conditionalStyles[] = $conditional2;
+
+            $spreadsheet->getActiveSheet()->getStyle('B2')->setConditionalStyles($conditionalStyles);
+            //将规则集复制到其他单元格
+            $worksheet->duplicateStyle($spreadsheet->getActiveSheet()->getStyle('B2'), 'B3:B7');
+        }
+        //单元格添加注释
+        {
+            $worksheet->getComment('E11')->setAuthor('chumeng');
+            $commentRichText = $worksheet->getComment('E11')->getText()->createTextRun('PhpSpreadsheet:');
+            $commentRichText->getFont()->setBold(true);
+            $worksheet->getComment('E11')->getText()->createTextRun("\r\n");
+            $worksheet->getComment('E11')->getText()->createTextRun('Total amount on the current invoice, excluding VAT.');
+            //添加带有背景图像的注释
+            $worksheet->setCellValue('B5', 'picture');
+            $drawing = new Drawing();
+            $drawing->setName('comment');
+            $drawing->setPath('C:\Users\Administrator\Pictures\1.png');
+            $comment = $worksheet->getComment('B5');
+            $comment->setBackgroundImage($drawing);
+            $comment->setSizeAsBackgroundImage();
+        }
+        //在电子表格上设置安全性
+        {
+            /*
+             * “保护”与“加密”不同。保护是为了防止电子表格的某些部分被更改，而不是为了防止电子表格被查看
+             * PhpSpreadsheet不支持加密电子表格；也不能读取加密的电子表格
+             * Excel 提供三个级别的“保护”
+             */
+            //启用工作表保护
+            $spreadsheet->getActiveSheet()->getProtection()->setSheet(true);
+            // Document：允许在完整的电子表格上设置密码，只有输入该密码才能进行更改
+            $security = $spreadsheet->getSecurity();
+            $security->setLockWindows(true);
+            $security->setLockStructure(true);
+            $security->setWorkbookPassword("PhpSpreadsheet");
+            // Worksheet:提供其他安全选项,用户可以排序，插入行或格式化单元格而无需取消保护
+            $protection = $spreadsheet->getActiveSheet()->getProtection();
+            $protection->setPassword('PhpSpreadsheet');
+            $protection->setSheet(true);
+            $protection->setSort(false);
+            $protection->setInsertRows(false);
+            $protection->setFormatCells(false);
+            //如果允许排序而不提供工作表密码，则需要明确启用允许排序的单元格范围，无论是否使用范围密码
+            $worksheet->protectCells('A:A');
+            $worksheet->protectCells('B:B', 'sortPW');
+            // Cell:提供锁定/解锁单元格以及显示/隐藏内部公式的选项
+            $spreadsheet->getActiveSheet()->getStyle('B1')->getProtection()
+                ->setLocked(Protection::PROTECTION_UNPROTECTED)
+                ->setHidden(Protection::PROTECTION_PROTECTED);
+        }
+        // 读取受保护的电子表格
+        {
+            $protection = $spreadsheet->getActiveSheet()->getProtection();
+            $allowed = $protection->verify('PhpSpreadsheet');
+
+            if ($allowed) {
+                $spreadsheet->getActiveSheet();
+            } else {
+                throw new RuntimeException('Incorrect password');
+            }
+        }
+        //在单元格上设置数据验证
+        {
+            //仅允许在单元格 B3 中输入 10 到 20 之间的数字
+            $validation = $spreadsheet->getActiveSheet()->getCell('B3')->getDataValidation();
+            $validation->setType(DataValidation::TYPE_WHOLE);
+            $validation->setErrorStyle(DataValidation::STYLE_STOP);
+            $validation->setAllowBlank(true);
+            $validation->setShowInputMessage(true);
+            $validation->setShowErrorMessage(true);
+            $validation->setErrorTitle('Input error');
+            $validation->setError('Number is not allowed!');
+            $validation->setPromptTitle('Allowed input');
+            $validation->setPrompt('Only numbers between 10 and 20 are allowed.');
+            $validation->setFormula1(10);
+            $validation->setFormula2(20);
+
+            //只允许将从数据列表中挑选的项目输入到单元格 B5 中
+            $validation = $spreadsheet->getActiveSheet()->getCell('B5')->getDataValidation();
+            $validation->setType(DataValidation::TYPE_LIST);
+            $validation->setErrorStyle(DataValidation::STYLE_INFORMATION);
+            $validation->setAllowBlank(false);
+            $validation->setShowInputMessage(true);
+            $validation->setShowErrorMessage(true);
+            $validation->setShowDropDown(true);
+            $validation->setErrorTitle('Input error');
+            $validation->setError('Value is not in list.');
+            $validation->setPromptTitle('Pick from list');
+            $validation->setPrompt('Please pick a value from the drop-down list.');
+            $validation->setFormula1('"Item A,Item B,Item C"');
+
+            //需要对多个单元格进行数据验证 两种方式
+            $spreadsheet->getActiveSheet()->getCell('B8')->setDataValidation(clone $validation);
+            $validation->setSqref('B5:B1048576');
+        }
+        //设置列宽
+        $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(12);
+        $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(120, 'pt'); //可以指定单位
+        $spreadsheet->getActiveSheet()->getColumnDimension('B')->setAutoSize(true);
+        //设置行高
+        $spreadsheet->getActiveSheet()->getRowDimension('10')->setRowHeight(100);
+        $spreadsheet->getActiveSheet()->getRowDimension('10')->setRowHeight(100, 'pt');
+        $spreadsheet->getActiveSheet()->getRowDimension(1)->setRowHeight(//14.5为字体Calibri 11的高度
+            14.5 * (substr_count($worksheet->getCell('A1')->getValue(), "\n") + 1)
+        );
+        //显示、隐藏列  显示 C 列，隐藏 D 列
+        $spreadsheet->getActiveSheet()->getColumnDimension('C')->setVisible(true);
+        $spreadsheet->getActiveSheet()->getColumnDimension('D')->setVisible(false);
+        // 显示/隐藏行
+        $spreadsheet->getActiveSheet()->getRowDimension('10')->setVisible(false);
+        $spreadsheet->getActiveSheet()->getColumnDimension('E')->setOutlineLevel(1);
+        // Group/outline
+        {
+            $spreadsheet->getActiveSheet()->getColumnDimension('E')->setCollapsed(true);
+            $spreadsheet->getActiveSheet()->getColumnDimension('E')->setVisible(false);
+            //摘要添加到左侧
+            $spreadsheet->getActiveSheet()->setShowSummaryRight(false);
+
+            // 折叠行
+            $spreadsheet->getActiveSheet()->getRowDimension('5')->setOutlineLevel(1);
+            $spreadsheet->getActiveSheet()->getRowDimension('5')->setCollapsed(true);
+            $spreadsheet->getActiveSheet()->getRowDimension('5')->setVisible(false);
+            //将摘要添加到上方
+            $spreadsheet->getActiveSheet()->setShowSummaryBelow(false);
+        }
+        //合并/取消合并单元格
+        $spreadsheet->getActiveSheet()->mergeCells('A18:E22', Worksheet::MERGE_CELL_CONTENT_MERGE);
+        $spreadsheet->getActiveSheet()->unmergeCells('A18:E22');
+        // 第 7 行之前插入 2 个新行
+        $spreadsheet->getActiveSheet()->insertNewRowBefore(7, 2);
+        //第 7 行开始删除 2 行（即第 7 行和第 8 行）
+        $spreadsheet->getActiveSheet()->removeRow(7, 2);
+        $spreadsheet->getActiveSheet()->removeColumn('C', 2);
+        //向单元格添加富文本
+        {
+            $richText = new RichText();
+            $richText->createText('This invoice is ');
+            $payable = $richText->createTextRun('payable within thirty days after the end of the month');
+            $payable->getFont()->setBold(true);
+            $payable->getFont()->setItalic(true);
+            $payable->getFont()->setColor(new Color(Color::COLOR_DARKGREEN));
+            $richText->createText(', unless specified otherwise on the invoice.');
+            $spreadsheet->getActiveSheet()->getCell('A18')->setValue($richText);
+        }
+        //定义命名范围
+        $spreadsheet->addNamedRange(new NamedRange('PersonFN', $spreadsheet->getActiveSheet(), '$B$1'));
+        $spreadsheet->addNamedRange(new NamedRange('PersonLN', $spreadsheet->getActiveSheet(), '$B$2'));
+        //定义命名公式
+        $spreadsheet->addNamedFormula(new NamedFormula('GERMAN_VAT_RATE', $worksheet, '=16.0%'));
+        $spreadsheet->addNamedFormula(new NamedFormula('CALCULATED_PRICE', $worksheet, '=$B1*$C1'));
+
+        /*
+         * 将输出重定向到客户端的 Web 浏览器:
+         * 1. 创建 PhpSpreadsheet
+         * 2. 电子表格输出您想要输出的文档类型的 HTTP
+         * 3. 标头使用\PhpOffice\PhpSpreadsheet\Writer\*您选择的，并保存到'php://output'
+         *
+         * \PhpOffice\PhpSpreadsheet\Writer\Xlsx写入时使用临时存储php://output。默认情况下，临时文件存储在脚本的工作目录中
+         * 当没有访问权限时，它会返回到操作系统的临时文件位置。未经授权的查看可能不安全！根据操作系统的配置，任何使用同一临时存储文件夹的人
+         * 都可以读取临时存储。当需要对文档保密时，建议不要使用php://output
+         */
+        {
+            // excel 2007
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment;filename="file.xlsx"');
+            header('Cache-Control: max-age=0');
+            $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+            $writer->save('php://output');
+
+            // csv
+            header('Content-Type: application/vnd.ms-excel');
+            header('Content-Disposition: attachment;filename="file.xls"');
+            header('Cache-Control: max-age=0');
+            $writer = IOFactory::createWriter($spreadsheet, 'Xls');
+            $writer->save('php://output');
+        }
+        //设置默认列宽
+        $spreadsheet->getActiveSheet()->getDefaultColumnDimension()->setWidth(12);
+        //设置默认行高
+        $spreadsheet->getActiveSheet()->getDefaultRowDimension()->setRowHeight(15);
+        //设置工作表缩放级别,缩放级别应在 10 - 400
+        $spreadsheet->getActiveSheet()->getSheetView()->setZoomScale(75);
+        //工作表标签颜色
+        $worksheet->getTabColor()->setRGB('FF0000');
+        //创建工作表
+        $worksheet1 = $spreadsheet->createSheet();
+        $worksheet1->setTitle('Another sheet');
+        //隐藏工作表
+        $spreadsheet->getActiveSheet()->setSheetState(Worksheet::SHEETSTATE_VERYHIDDEN);
+        //从右到左设置列
+        $spreadsheet->getActiveSheet()->setRightToLeft(true);
+        //GD 绘图,略
+        //添加绘图
+        {
+            $drawing = new Drawing();
+            $drawing->setName('Logo');
+            $drawing->setDescription('Logo');
+            $drawing->setPath('C:\Users\Administrator\Pictures\1.png');
+            $drawing->setHeight(36);
+            $drawing->setCoordinates('B15');
+            $drawing->setOffsetX(110);
+            $drawing->setRotation(25);
+            $drawing->getShadow()->setVisible(true);
+            $drawing->getShadow()->setDirection(45);
+
+            $drawing->setWorksheet($spreadsheet->getActiveSheet());
+        }
+    }
+    /**
+     * conditional-formatting:允许根据单元格的值设置格式选项
+     * @link https://phpspreadsheet.readthedocs.io/en/latest/topics/conditional-formatting/
+     * @return void
+     */
+    public function testCondition(): void
+    {
+        $spreadsheet = $this->spreadsheet;
+
+        {
+            $conditional = new Conditional();
+            $conditional->setConditionType(Conditional::CONDITION_CELLIS);
+            $conditional->setOperatorType(Conditional::OPERATOR_GREATERTHAN);
+            $conditional->addCondition(80);
+            $conditional->getStyle()->getFont()->getColor()->setARGB(Color::COLOR_DARKGREEN);
+            $conditional->getStyle()->getFill()->setFillType(Fill::FILL_SOLID);
+            $conditional->getStyle()->getFill()->getStartColor()->setARGB(Color::COLOR_GREEN);
+            $conditionalStyles = $spreadsheet->getActiveSheet()->getStyle('A1:A10')->getConditionalStyles();
+            $conditionalStyles[] = $conditional;
+            $spreadsheet->getActiveSheet()->getStyle('A1:A10')->setConditionalStyles($conditionalStyles);
+
+            // 使用 Wizard
+            $wizardFactory = new Wizard('A1:A10');
+            $wizard = $wizardFactory->newRule(Wizard::CELL_VALUE);
+            $wizard->greaterThan(80);
+            $wizard->getStyle()->getFont()->getColor()->setARGB(Color::COLOR_DARKGREEN);
+            $wizard->getStyle()->getFill()->setFillType(Fill::FILL_SOLID);
+            $wizard->getStyle()->getFill()->getStartColor()->setARGB(Color::COLOR_GREEN);
+            $wizard->getConditional();
+        }
+        {
+            $conditional2 = new Conditional();
+            $conditional2->setConditionType(Conditional::CONDITION_CELLIS);
+            $conditional2->setOperatorType(Conditional::OPERATOR_LESSTHAN);
+            $conditional2->addCondition(10);
+            $conditional2->getStyle()->getFont()->getColor()->setARGB(Color::COLOR_DARKRED);
+            $conditional2->getStyle()->getFill()->setFillType(Fill::FILL_SOLID);
+            $conditional2->getStyle()->getFill()->getStartColor()->setARGB(Color::COLOR_RED);
+
+            $conditionalStyles = $spreadsheet->getActiveSheet()->getStyle('A1:A10')->getConditionalStyles();
+            $conditionalStyles[] = $conditional2;
+            $spreadsheet->getActiveSheet()->getStyle('A1:A10')->setConditionalStyles($conditionalStyles);
+
+            // 使用 Wizard
+            $wizardFactory = new Wizard('A1:A10');
+            $wizard = $wizardFactory->newRule(Wizard::CELL_VALUE);
+            $wizard->lessThan(10);// 调用的是 __call()
+            $wizard->getStyle()->getFont()->getColor()->setARGB(Color::COLOR_DARKGREEN);
+            $wizard->getStyle()->getFill()->setFillType(Fill::FILL_SOLID);
+            $wizard->getStyle()->getFill()->getStartColor()->setARGB(Color::COLOR_GREEN);
+            $wizard->getConditional();
+        }
+        {
+            $conditional = new Conditional();
+            $conditional->setConditionType(Conditional::CONDITION_CONTAINSTEXT);
+            $conditional->setOperatorType(Conditional::OPERATOR_CONTAINSTEXT);
+            $conditional->setText('"LL"');
+            $conditional->setConditions(['NOT(ISERROR(SEARCH("LL",A14)))']);
+
+            // 使用 Wizard
+            $cellRange = 'A14:B16';
+            $wizardFactory = new Wizard($cellRange);
+            /** @var Wizard\TextValue $textWizard */
+            $textWizard = $wizardFactory->newRule(Wizard::TEXT_VALUE);
+            $textWizard->contains('LL');
+        }
+        // 主要是使用Wizard对各种数据类型进行条件判断，不是很需要，详细查看文档
+    }
+
+    /**
+     * 计算引擎
+     * @link https://phpspreadsheet.readthedocs.io/en/latest/topics/calculation-engine/
+     * @return void
+     */
+    public function testCalculationEngine(): void
+    {
+        // 略
     }
 }
