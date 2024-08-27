@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d5f9fb92bc7b35e354e73037c30fb515",
+    "content-hash": "bfe5d067f15320e72444a88058d79ecb",
     "packages": [
         {
             "name": "carbonphp/carbon-doctrine-types",
@@ -2625,6 +2625,51 @@
                 "source": "https://github.com/swoole/ide-helper/tree/4.8.13"
             },
             "time": "2023-03-20T06:46:24+00:00"
+        },
+        {
+            "name": "swoole/phpy",
+            "version": "1.0.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/swoole/phpy.git",
+                "reference": "fdda4342c24cd5b95acd8f524837d7e37b4384c5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/swoole/phpy/zipball/fdda4342c24cd5b95acd8f524837d7e37b4384c5",
+                "reference": "fdda4342c24cd5b95acd8f524837d7e37b4384c5",
+                "shasum": ""
+            },
+            "require": {
+                "ext-phpy": "*",
+                "php": ">=8.1"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.40",
+                "phpunit/phpunit": "^10.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "python\\": "./lib/python",
+                    "PhpyTool\\": "tools/src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "description": "Connecting the Python and PHP ecosystems together",
+            "keywords": [
+                "ai",
+                "php",
+                "python"
+            ],
+            "support": {
+                "issues": "https://github.com/swoole/phpy/issues",
+                "source": "https://github.com/swoole/phpy/tree/1.0.6"
+            },
+            "time": "2024-08-20T08:21:53+00:00"
         },
         {
             "name": "symfony/clock",

@@ -47,7 +47,8 @@
         "monolog/monolog": "^3.6",
         "intervention/image": "^3.6",
         "nesbot/carbon": "^3.4",
-        "jolicode/jolinotif": "^2.7"
+        "jolicode/jolinotif": "^2.7",
+        "swoole/phpy": "*"
     },
     "require-dev": {
         "symfony/var-dumper": ">=4.2",
