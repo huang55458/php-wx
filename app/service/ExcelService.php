@@ -7,6 +7,7 @@ namespace app\service;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\Helper\Sample;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Reader\Csv;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
@@ -90,6 +91,9 @@ class ExcelService extends Service
     public function loadXlsx($filename): array
     {
         $res = [];
+        Csv::setConstructorCallback(static function (Csv $reader) {
+            $reader->setInputEncoding('GB2312'); // csv 加载中文乱码
+        });
         $spreadsheet = IOFactory::load($filename);
         //        $spreadsheet->setActiveSheetIndex(1);
         $sheet = $spreadsheet->getActiveSheet();

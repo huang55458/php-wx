@@ -775,4 +775,31 @@ class Tool extends BaseController
         file_put_contents(runtime_path() . DIRECTORY_SEPARATOR . 'tmp1.txt', json_encode($err));
         file_put_contents(runtime_path() . DIRECTORY_SEPARATOR . 'tmp2.txt', json_encode($succ));
     }
+
+    /**
+     * @noinspection ForgottenDebugOutputInspection
+     * @see https://www.php.net/manual/zh/session.configuration.php#ini.session.gc-maxlifetime
+     * session.gc_probability / session.gc_divisor  所得的值为每个请求中有 ？% 的概率启动 gc 进程
+     * session.gc_maxlifetime 指定session过期时间，默认为 1440（24分钟）秒
+     */
+    public function session(): void
+    {
+        session_cache_limiter('private'); // Cache-Control https://juejin.cn/post/7282692458247962676
+        session_cache_expire(); // 并不是session过期时间，给浏览器的缓冲会话页面的存活期
+        dump(ini_set('session.gc_probability', 1));
+        dump(ini_set('session.gc_divisor', 1));
+        dump(ini_set('session.gc_maxlifetime', 10)); // 10秒后的第一次请求接收会运行gc，第二次访问session才为空
+        session_start();
+        session(); // 这是框架用来设置缓存，缓存使用$_SESSION
+        dump(ini_get('session.gc_probability'));
+        dump(ini_get('session.gc_divisor'));
+        dump(ini_get('session.gc_maxlifetime'));
+        if (isset($_SESSION['id'])) {
+            dump('当前session未过期');
+            dump($_SESSION);
+        } else {
+            $_SESSION['id'] = 1;
+            dump('session已过期，已重新分配session_id:' . session_id());
+        }
+    }
 }
