@@ -24,7 +24,7 @@ class Hello extends Command
 
         if ($input->hasOption('send-email')) {
             //            $body = $input->getOption('send-email');
-            (new SendEmail())->run();
+            (new SendEmail())->run('测');
         }
 
         $output->writeln("success");

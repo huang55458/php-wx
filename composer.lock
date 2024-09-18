@@ -2466,16 +2466,16 @@
         },
         {
             "name": "rmccue/requests",
-            "version": "v2.0.10",
+            "version": "v2.0.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/WordPress/Requests.git",
-                "reference": "bcf1ac7fe8c0b2b18c1df6d24694cfc96b44b391"
+                "reference": "fb67e3d392ff6b89a90e96f19745662f4ecd62b1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WordPress/Requests/zipball/bcf1ac7fe8c0b2b18c1df6d24694cfc96b44b391",
-                "reference": "bcf1ac7fe8c0b2b18c1df6d24694cfc96b44b391",
+                "url": "https://api.github.com/repos/WordPress/Requests/zipball/fb67e3d392ff6b89a90e96f19745662f4ecd62b1",
+                "reference": "fb67e3d392ff6b89a90e96f19745662f4ecd62b1",
                 "shasum": ""
             },
             "require": {
@@ -2549,7 +2549,7 @@
                 "issues": "https://github.com/WordPress/Requests/issues",
                 "source": "https://github.com/WordPress/Requests"
             },
-            "time": "2024-01-08T11:14:32+00:00"
+            "time": "2024-07-08T08:10:42+00:00"
         },
         {
             "name": "stechstudio/backoff",

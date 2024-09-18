@@ -68,15 +68,15 @@ class ToolTest extends TestCase
     public function testFn(): void
     {
         $y = 1;
-        $fn1 = static fn($x) => $x + $y;
+        $fn1 = static fn ($x) => $x + $y;
         $this->assertEquals(2, $fn1(1));
 
         $z = 1;
-        $fn = static fn($x) => static fn($y) => $x * $y + $z;
+        $fn = static fn ($x) => static fn ($y) => $x * $y + $z;
         $this->assertEquals(51, $fn(5)(10));
 
         // 箭头函数会自动绑定上下文变量 不能修改外部作用域的任何值
-        $fn2 = static fn() => ++$y;
+        $fn2 = static fn () => ++$y;
         $this->assertEquals(2, $fn2());
         $this->assertEquals(1, $y);
 
@@ -87,7 +87,7 @@ class ToolTest extends TestCase
         $this->assertEquals(2, $z);
 
         $arr = [1, 2, 3];
-        $arr = array_map(static fn($x) => $x + 2, $arr);
+        $arr = array_map(static fn ($x) => $x + 2, $arr);
         $this->assertEquals([3, 4, 5], $arr);
     }
 
@@ -124,7 +124,8 @@ class ToolTest extends TestCase
             $value = is_array($value) ? encode_json($value) : $value;
             return file_put_contents($path, $value);
         }
-        function get($key){
+        function get($key)
+        {
             $file_name = md5(__CLASS__) . '_' . $key;
             $path = '/dev/shm/' . $file_name;
             $value = file_get_contents($path);
@@ -146,5 +147,34 @@ class ToolTest extends TestCase
         $val = get($key);
         $this->assertStringContainsString(encode_json($value), encode_json($val));
         delete($key);
+    }
+
+    /*
+     * 两个6位数相等的概率
+     */
+    public function testProbability(): void
+    {
+        function x(): string
+        {
+            return (string)random_int(0, 9);
+        }
+
+        $k = 1000;
+        $y = [];
+        while ($k--) {
+            $i = 0;
+            while (true) {
+                $a = x() . x() . x() . x() . x() . x();
+                $b = x() . x() . x() . x() . x() . x();
+                if ($a === $b) {
+                    echo '结果：' . $a;
+                    break;
+                }
+                $i++;
+            }
+            echo ' 循环次数：' . $i . PHP_EOL;
+            $y[] = $i;
+        }
+        echo '最少次数：' . min($y);
     }
 }

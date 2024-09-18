@@ -357,7 +357,7 @@ class Tool extends BaseController
                 $uri = 'http://gamma.vkj56.cn:8009/api/Table/Tools/searchByOption?';
                 break;
             case '306':
-                $uri = 'http://w-sas-1000-web-alpha-00.vkj56.cn:306/api/Table/Tools/searchByOption?';
+                $uri = 'http://w-sas-1000-web-alpha-01.vkj56.cn:306/api/Table/Tools/searchByOption?';
                 break;
             default:
                 return json('error');
@@ -587,10 +587,14 @@ class Tool extends BaseController
         $arr = array_values(array_filter(explode(',', $arr)));
         $tmp = array_chunk($arr, 10);
         $uri = 'http://yundan.vkj56.cn/api/Accounts/DoData/updateAccrual?doc_ids=';
+        $i = 1;
+        $count = count($tmp);
         foreach ($tmp as $v) {
             $response = Requests::get($uri . implode(',', $v), [], []);
             Log::write($response->body);
-            dump($response->body);
+            $process = round($i / $count * 100, 2);
+            dump($response->body. '  --- 进度 ' .$process. ' %');
+            $i++;
         }
         return 'success';
     }
