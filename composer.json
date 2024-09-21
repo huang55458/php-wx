@@ -48,7 +48,8 @@
         "intervention/image": "^3.6",
         "nesbot/carbon": "^3.4",
         "jolicode/jolinotif": "^2.7",
-        "swoole/phpy": "*"
+        "swoole/phpy": "*",
+        "longman/telegram-bot": "^0.83.1"
     },
     "require-dev": {
         "symfony/var-dumper": ">=4.2",

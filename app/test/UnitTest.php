@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection ForgottenDebugOutputInspection */
 
 namespace app\test;
 
@@ -10,32 +10,61 @@ use ReverseRegex\Random\MersenneRandom;
 
 class UnitTest extends TestCase
 {
-    public function jdd($var): void
+    // 每个测试方法调用前运行
+    public function setUp(): void
     {
-        try {
-            echo json_encode($var, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . PHP_EOL;
-        } catch (\JsonException $e) {
-        }
+        dump('setUp');
     }
 
-    public function test1(): void
+    // 每个测试方法调用后运行
+    public function tearDown(): void
     {
-        $this->jdd([1, 23]);
-        $stack = [];
-        $this->assertCount(0, $stack);
+        dump('tearDown');
     }
 
-    public function test2(): void
+    // 最后一个方法调用后执行
+    public static function tearDownAfterClass(): void
     {
-        $this->jdd([1, 23]);
-        $stack = [];
-        $this->assertCount(0, $stack);
+        dump('tearDownAfterClass');
     }
 
+    // 第一个测试方法调用前执行
+    public static function setUpBeforeClass(): void
+    {
+        dump('setUpBeforeClass');
+    }
+
+    public function test1(): string
+    {
+        $this->assertEquals(1, 1);
+        return 'a';
+    }
+
+    public function test2(): string
+    {
+        $this->assertEquals(1, 1);
+        return 'b';
+    }
+
+    public function data(): array
+    {
+        return [
+            [1, 2],
+            [5, 6],
+        ];
+    }
+
+    /**
+     * depends:所依赖的测试，返回的数据会提供到当前的测试里, dataProvider:提供数据，返回的参数会在前面
+     * @depends test1
+     * @depends test2
+     * @dataProvider data
+     * @return void
+     */
     public function test3(): void
     {
-        $d = shell_exec("echo 1111");
-        $this->assertNotEmpty($d);
+        $this->assertEquals(1, 1);
+        dump(func_get_args());
     }
 
     public function testReverseRegexp(): void
