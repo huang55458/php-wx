@@ -50,8 +50,15 @@ $fun = static function () use ($handled_times, $total_count, $client) {
         Log::write($hint);
         if (!$client->connected && !$client->connect('127.0.0.1', 9501, 0.5)) {
             echo "connect failed. Error: {$client->errCode} ErrorMsg: {$client->errMsg}\n";
+            return;
         }
-        $client->send($handled_times->get() / $total_count * 100);
+        $response =$client->send($handled_times->get() / $total_count * 100);
+        if ($response === false) {
+            $client = new Client(SWOOLE_SOCK_TCP);
+            if ($client->connect('127.0.0.1', 9501, 0.5)) {
+                $client->send($handled_times->get() / $total_count * 100);
+            }
+        }
 //        Coroutine::exec("echo -e '\033[1m{$hint}\033[0m'"); // 无法输出到命令行
 //        $notifier = new DefaultNotifier();
 //        $notification = (new Notification())->setTitle('php program progress')->setBody(round($handled_times->get() / $total_count * 100, 2) . '%');

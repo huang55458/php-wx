@@ -50,3 +50,11 @@ export PYTHONPATH=/home/chumeng/.local/lib/python3.12/site-packages # pip安装�
 #可以直接把模块放入'python安装目录/lib/python3.12/site-packages'，或者在目录下放入模块名.pth,内容为模块路径（如/mnt/e/app/tkinter）
 
 ./configure --prefix=/home/huangjinxiong/ext/gcc -enable-checking=release -enable-languages=c,c++ -disable-multilib #gcc编译选项
+
+wget ... -Y on -e "https_proxy=127.0.0.1:10809" #wget使用代理
+
+./configure CFLAGS=-I/usr/local/arm/2.95.3/arm-linux/include LDFLAGS=-L/usr/local/arm/2.95.3/arm-linux/lib  --enable-openssl --enable-sockets  --enable-swoole-curl --enable-cares --enable-swoole-thread   #swoole编译指定库，未测试
+
+/gost-linux-amd64-2.11.5 -L=rtcp://:11223/127.0.0.1:11224
+
+yum groupinstall "Development Tools"

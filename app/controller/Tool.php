@@ -806,4 +806,65 @@ class Tool extends BaseController
             dump('session已过期，已重新分配session_id:' . session_id());
         }
     }
+
+    // 触发pdd订阅
+    public function pdd(): void
+    {
+        $this->file_path = runtime_path() . DIRECTORY_SEPARATOR . 'tmp.txt';
+        $order_nums = explode(',', file_get_contents($this->file_path));
+        $order_nums = ['Y24100156132'];
+        foreach ($order_nums as $order_num) {
+            $data = [
+                "trackingOrderNo" => $order_num,
+                "trackingNumber" => $order_num
+            ];
+            $req = [
+                "client_id" => "e7c59e4899fa46a18f256027c7e943d1",
+                "data" => encode_json($data),
+                "from_client_id" => "edb65ef927c14c7bb0d4b86981de48ce",
+                "ship_id" => "427",
+                "timestamp" => time(),
+                "type" => "pdd.logistics.co.track.sub",
+            ];
+            $str = '';
+            foreach($req as $key => $value) {
+                $str = $str.$key.$value;
+            }
+            $secret = 'fc7178f88b85b29b34415d5ce82fe73006e6db88';
+            $str = $secret.$str.$secret;
+            $req['sign'] = strtoupper(md5($str));
+
+            $uri = env('YUN_DAN_PROD') . "/api/OpenApi/Pinduoduo/trackSub";
+            $response = Requests::post($uri, [], encode_json($req), []);
+            dump([$order_num, $response->decode_body()]);
+        }
+    }
+
+    public function pddSearch(): Json
+    {
+        $order_num = 'HHSJ24110016';
+        $data = [
+            "trackingOrderNo" => $order_num,
+            "trackingNumber" => $order_num
+        ];
+        $req = [
+            "client_id" => "e7c59e4899fa46a18f256027c7e943d1",
+            "data" => encode_json($data),
+            "from_client_id" => "edb65ef927c14c7bb0d4b86981de48ce",
+            "ship_id" => "427",
+            "timestamp" => time(),
+            "type" => "pdd.logistics.co.track.query",
+        ];
+        $str = '';
+        foreach($req as $key => $value) {
+            $str = $str.$key.$value;
+        }
+        $secret = 'fc7178f88b85b29b34415d5ce82fe73006e6db88';
+        $str = $secret.$str.$secret;
+        $req['sign'] = strtoupper(md5($str));
+
+        $uri = env('YUN_DAN_PROD') . '/api/OpenApi/Pinduoduo/trackQuery';
+        $response = Requests::post($uri, [], encode_json($req), []);
+        return json($response->decode_body());
+    }
 }

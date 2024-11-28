@@ -42,6 +42,7 @@ class ToolService extends \think\Service
         if ($count > $page_size) {
             $y = floor($count / $page_size);
             for ($i = 0; $i < $y; $i++) {
+                dump([$i, $y]);
                 $req['page_num']++;
                 $param['data']['req'] = json_encode($req, JSON_UNESCAPED_UNICODE);
                 $data = test_curl('post', $param);
