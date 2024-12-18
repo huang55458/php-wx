@@ -2,6 +2,7 @@
 
 namespace app\test;
 
+use app\service\ToolService;
 use DirectoryIterator;
 use PHPUnit\Framework\TestCase;
 use think\App;
@@ -9,10 +10,12 @@ use const JSON_ERROR_NONE;
 
 class ToolTest extends TestCase
 {
+    private App $app;
     public function __construct(string $name)
     {
         parent::__construct($name);
-        $http = (new App())->http;
+        $this->app = new App();
+        $http = $this->app->http;
         $http->run();
     }
 
@@ -176,5 +179,15 @@ class ToolTest extends TestCase
             $y[] = $i;
         }
         echo '最少次数：' . min($y);
+    }
+
+    public function testWxpusherSPT(): void
+    {
+        dump((new ToolService($this->app))->wxpusherSPT('测试'));
+    }
+
+    public function testGofity(): void
+    {
+        dump((new ToolService($this->app))->gofity('test', 'test'));
     }
 }

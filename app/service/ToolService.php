@@ -6,6 +6,7 @@ namespace app\service;
 
 use think\facade\Log;
 use WpOrg\Requests\Requests;
+use WpOrg\Requests\Response;
 
 class ToolService extends \think\Service
 {
@@ -145,5 +146,22 @@ class ToolService extends \think\Service
                 }
             }
         }
+    }
+
+    public function wxpusherSPT(string $message): Response
+    {
+        $SPT = env('SPT');
+        return Requests::get("https://wxpusher.zjiecode.com/api/send/message/$SPT/$message");
+    }
+
+    public function gofity(string $title, string $message): Response
+    {
+        $gotify_uri = env('GOTIFY_URI');
+        $token = env('GOTIFY_TOKEN');
+        $data = [
+            'title' => $title,
+            'message' => $message,
+        ];
+        return Requests::post("http://$gotify_uri/message?token=$token", data: $data);
     }
 }
