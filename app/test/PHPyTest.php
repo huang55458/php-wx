@@ -37,6 +37,24 @@ class PHPyTest extends TestCase
 
     }
 
+    /**
+     * @return void
+     * 测试失败，chromedriver无法启动
+     */
+    public function testSelenium(): void
+    {
+        $webdriver = PyCore::import('selenium.webdriver');
+        $chrome = PyCore::import('selenium.webdriver.chrome');
+        $service = $chrome->service(executable_path:"/mnt/e/chromedriver-linux64/chromedriver");
+
+        $options = $webdriver->ChromeOptions();
+        $options->page_load_strategy = 'normal';
+        $driver = $webdriver->Chrome(service: $service, options: $options);
+        $driver.get("http://w-sas-1000-web-alpha-01.vkj56.cn:306");
+        dump($driver->title);
+        $driver.quit();
+    }
+
     public function __destruct()
     {
         echo '-------------------------------------------------';

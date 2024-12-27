@@ -108,6 +108,22 @@ return [
             'password' => env('PRO_MAIN_PASS'),
             'hostport' => '3306',
         ],
+        'pro_acc_finance' => [
+            'type' => 'mysql',
+            'hostname' => env('PRO_ACC_FINANCE_HOST'),
+            'database' => env('PRO_ACC_FINANCE_DATABASE'),
+            'username' => env('PRO_ACC_FINANCE_USER'),
+            'password' => env('PRO_ACC_FINANCE_PASS'),
+            'hostport' => '3306',
+        ],
+        'alpha' => [
+            'type' => 'mysql',
+            'hostname' => env('ALPHA_HOST'),
+            'database' => env('ALPHA_DATABASE'),
+            'username' => env('ALPHA_USER'),
+            'password' => env('ALPHA_PASS'),
+            'hostport' => '3306',
+        ],
         // 更多的数据库配置信息
     ],
 ];
