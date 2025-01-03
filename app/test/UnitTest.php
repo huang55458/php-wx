@@ -2,14 +2,24 @@
 
 namespace app\test;
 
+use Facebook\WebDriver\Remote\DesiredCapabilities;
+use Facebook\WebDriver\Remote\RemoteWebDriver;
+use Facebook\WebDriver\WebDriverBy;
 use PHPUnit\Framework\TestCase;
 use ReverseRegex\Generator\Scope;
 use ReverseRegex\Lexer;
 use ReverseRegex\Parser;
 use ReverseRegex\Random\MersenneRandom;
+use think\App;
 
 class UnitTest extends TestCase
 {
+    public function __construct(string $name)
+    {
+        parent::__construct($name);
+        (new App())->initialize();
+    }
+
     // 每个测试方法调用前运行
     public function setUp(): void
     {
@@ -84,5 +94,23 @@ class UnitTest extends TestCase
             echo $result . PHP_EOL;
             $this->assertMatchesRegularExpression("/^(?:[\u4e00-\u9fa5·]{2,16})$/", $result);
         }
+    }
+
+    /**
+     * chromedriver --port=4444
+     * 注意：即使是在LTS上执行，也是使用window版chromedriver
+     * @see https://github.com/php-webdriver/php-webdriver
+     * @return void
+     */
+    public function testWebdriver(): void
+    {
+        $serverUrl = 'http://localhost:4444';
+        $driver = RemoteWebDriver::create($serverUrl, DesiredCapabilities::chrome());
+        $driver->get(env('YUN_DAN_ALPHA'));
+        $driver->findElement(WebDriverBy::id('group_id'))->sendKeys('1000');
+        $driver->findElement(WebDriverBy::id('telePhone'))->sendKeys('测111');
+        $driver->findElement(WebDriverBy::id('passWord'))->sendKeys('123456');
+        $driver->findElement(WebDriverBy::id('loginBtn'))->click();
+        // $driver->close();
     }
 }

@@ -53,7 +53,8 @@
         "composer/pcre": "^3.3",
         "jeremykendall/php-domain-parser": "^6.3",
         "firebase/php-jwt": "^6.10",
-        "paragonie/sodium_compat": "^2.1"
+        "paragonie/sodium_compat": "^2.1",
+        "php-webdriver/webdriver": "^1.15"
     },
     "require-dev": {
         "symfony/var-dumper": ">=4.2",
